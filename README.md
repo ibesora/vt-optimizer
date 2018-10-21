@@ -1,6 +1,7 @@
 # Vector Tile optimizer
 
 [![Build Status Linux](https://travis-ci.org/ibesora/vt-optimizer.svg?branch=master)](https://travis-ci.org/ibesora/vt-optimizer)
+[![Build status](https://ci.appveyor.com/api/projects/status/7c6haos5thbxrnu4/branch/master?svg=true)](https://ci.appveyor.com/project/ibesora/vt-optimizer/branch/master)
 ![Dependency Status](https://david-dm.org/ibesora/vt-optimizer.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
