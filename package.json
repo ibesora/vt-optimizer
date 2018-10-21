@@ -1,7 +1,7 @@
 {
-  "name": "vt-weight-loser",
+  "name": "vt-optimizer",
   "version": "0.0.1",
-  "description": "A vector tile weight optimizer",
+  "description": "A vector tile size inspector and optimizer",
   "main": "src/index.js",
   "scripts": {
     "lint": "eslint --fix --cache --ignore-path .gitignore src",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ibesora/vt-weight-loser.git"
+    "url": "git+https://github.com/ibesora/vt-optimizer.git"
   },
   "keywords": [
     "vector",
@@ -21,9 +21,9 @@
   "author": "ibesora",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ibesora/vt-weight-loser/issues"
+    "url": "https://github.com/ibesora/vt-optimizer/issues"
   },
-  "homepage": "https://github.com/ibesora/vt-weight-loser#readme",
+  "homepage": "https://github.com/ibesora/vt-optimizer#readme",
   "dependencies": {
     "command-line-args": "^5.0.2",
     "command-line-usage": "^5.0.5",

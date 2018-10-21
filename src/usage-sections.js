@@ -24,7 +24,7 @@ module.exports = [
 	},
 	{
 		content: [
-			"Project home: https://github.com/ibesora/vt-weight-loser",
+			"Project home: https://github.com/ibesora/vt-optimizer",
 			"Made with love by @ibesora"
 		]
 	}
