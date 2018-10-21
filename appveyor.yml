@@ -12,5 +12,6 @@ install:
   - md public
   - npm install --global --production windows-build-tools
   - npm install
+build: off
 test_script:
-  - npm run test
+  - npm run lint
