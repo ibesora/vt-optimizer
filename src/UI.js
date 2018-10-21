@@ -1,4 +1,5 @@
 // @flow
+/*eslint camelcase: ["error", {allow: ["zoom_level", "tile_row", "tile_column"]}]*/
 "use strict";
 
 const Inquirer = require("inquirer");
@@ -31,9 +32,9 @@ class UI {
 
 	}
 
-	static printSummaryTable(vtSummary, tiles, avgTileSizeLimit, avgTileSizeWarning) {
+	static printSummaryTable(vtSummary, tiles, avgTileSizeLimit, avgTileSizeWarning, tileSizeLimit) {
 
-		const data = UI.createSummaryTableData(vtSummary, tiles, avgTileSizeLimit, avgTileSizeWarning);
+		const data = UI.createSummaryTableData(vtSummary, tiles, avgTileSizeLimit, avgTileSizeWarning, tileSizeLimit);
 
 		Log.log("");
 		Log.title("Vector Tile Summary");
@@ -41,7 +42,7 @@ class UI {
 
 	}
 
-	static createSummaryTableData(vtSummary, tiles, avgTileSizeLimit, avgTileSizeWarning) {
+	static createSummaryTableData(vtSummary, tiles, avgTileSizeLimit, avgTileSizeWarning, tileSizeLimit) {
 
 		const data = [];
 		const bigTiles = tiles.reduce((obj, tile) => {
@@ -49,7 +50,7 @@ class UI {
 			obj[tile["zoom_level"]] = tile;
 			return obj;
 
-			},
+		},
 			{}
 		);
 
@@ -77,7 +78,7 @@ class UI {
 
 			if (currentBigTile) {
 
-				levelComment = `${levelComment} ${ColoredString.red(`Error: A total of ${currentBigTile.num} tiles are bigger than ${VTReader.tileSizeLimit}KB`)}`;
+				levelComment = `${levelComment} ${ColoredString.red(`Error: A total of ${currentBigTile.num} tiles are bigger than ${tileSizeLimit}KB`)}`;
 
 			}
 
@@ -102,9 +103,9 @@ class UI {
 
 			Inquirer.prompt([
 				{
-					type: "confirm", 
-					name: "extraInfo", 
-					message: "Do you want to get more information about a given level?", 
+					type: "confirm",
+					name: "extraInfo",
+					message: "Do you want to get more information about a given level?",
 					default: false
 				}
 			]).then(answers => {
@@ -119,7 +120,7 @@ class UI {
 
 	static selectLevelPrompt(vtSummary, avgTileSizeLimit, avgTileSizeWarning) {
 
-		const levels = vtSummary.map((elem) => 
+		const levels = vtSummary.map((elem) =>
 			UI.formatLevelElement(elem, avgTileSizeLimit, avgTileSizeWarning)
 		);
 
@@ -158,17 +159,17 @@ class UI {
 
 		}
 
-		return `${elem["zoom_level"]} (${elem.tiles} tiles - ${avgSizeMessage}) `
+		return `${elem["zoom_level"]} (${elem.tiles} tiles - ${avgSizeMessage}) `;
 
 	}
-		
+
 	static showTileDistributionData(data, avgTileSizeLimit, avgTileSizeWarning) {
 
-		const dataToPrint = data.map((elem, index) => 
+		const dataToPrint = data.map((elem, index) =>
 			UI.formatTileDistributionElement(elem, index, avgTileSizeLimit, avgTileSizeWarning)
 		);
 
-		Log.title("Tile size distribution")
+		Log.title("Tile size distribution");
 		Log.table(["#", "Bucket min (KB)", "Bucket max (KB)", "Nº of tiles", "Running avg size (KB)", "% of tiles in this level", "% of level size", "Accum % of tiles", "Accum % size"], dataToPrint);
 
 	}
@@ -190,7 +191,7 @@ class UI {
 
 		}
 
-		return [index+1, elem.minSize, elem.maxSize, elem.length, avgSizeMessage, elem.currentPc, elem.currentBucketSizePc, elem.accumPc, elem.accumBucketSizePc];
+		return [index + 1, elem.minSize, elem.maxSize, elem.length, avgSizeMessage, elem.currentPc, elem.currentBucketSizePc, elem.accumPc, elem.accumBucketSizePc];
 
 	}
 
@@ -200,13 +201,13 @@ class UI {
 
 			Inquirer.prompt([
 				{
-					type: "confirm", 
-					name: "extraInfo", 
-					message: "Do you want to see which tiles are in a bucket?", 
+					type: "confirm",
+					name: "extraInfo",
+					message: "Do you want to see which tiles are in a bucket?",
 					default: false
 				}
 			]).then(answers => {
-				
+
 				resolve(answers["extraInfo"]);
 
 			});
@@ -218,9 +219,9 @@ class UI {
 	static selectBucketPrompt(bucketData) {
 
 		const bucketNames = [];
-		for(let index = 1; index <= bucketData.length; ++index) {
+		for (let index = 1; index <= bucketData.length; ++index) {
 
-			const currBucketData = bucketData[index-1];
+			const currBucketData = bucketData[index - 1];
 			bucketNames.push(`${index} ${currBucketData.minSize} < Size <= ${currBucketData.maxSize} (${currBucketData.length} tiles)`);
 
 		}
@@ -232,11 +233,11 @@ class UI {
 				name: "bucket",
 				message: "Select a bucket",
 				choices: bucketNames
-			}]).then( (answers) => {
+			}]).then((answers) => {
 
-				const bucketIndex = parseInt(answers["bucket"].split(" ")[0]) -1;
+				const bucketIndex = parseInt(answers["bucket"].split(" ")[0]) - 1;
 				resolve(bucketIndex);
-	
+
 			});
 
 		});
@@ -245,7 +246,7 @@ class UI {
 
 	static showBucketInfo(bucket, tileSizeLimit) {
 
-		const info = bucket.sort((a, b) => b.size - a.size).map((tile) => 
+		const info = bucket.sort((a, b) => b.size - a.size).map((tile) =>
 			UI.formatBucketInfo(tile, tileSizeLimit)
 		);
 
@@ -267,13 +268,13 @@ class UI {
 
 			Inquirer.prompt([
 				{
-					type: "confirm", 
-					name: "extraTileInfo", 
-					message: "Do you want to get more info about a tile?", 
+					type: "confirm",
+					name: "extraTileInfo",
+					message: "Do you want to get more info about a tile?",
 					default: false
 				}
 			]).then(answers => {
-				
+
 				resolve(answers["extraTileInfo"]);
 
 			});
@@ -284,7 +285,7 @@ class UI {
 
 	static selectTilePrompt(bucket, tileSizeLimit) {
 
-		const tiles = bucket.map((tile) => 
+		const tiles = bucket.map((tile) =>
 			UI.formatBucketInfo(tile, tileSizeLimit)
 		);
 
@@ -295,12 +296,12 @@ class UI {
 				name: "tile",
 				message: "Select a tile",
 				choices: tiles
-			}]).then( (answers) => {
+			}]).then((answers) => {
 
 				const tileIndex = answers["tile"].split(" ")[0].split("/");
 				const tile = {zoom_level: tileIndex[0], tile_column: tileIndex[1], tile_row: tileIndex[2]};
 				resolve(tile);
-	
+
 			});
 
 		});
@@ -313,7 +314,7 @@ class UI {
 		let totalKeys = 0;
 		let totalValues = 0;
 
-		const info = tileData.layers.sort((a,b) => b.features.length - a.features.length).map((layer) => {
+		const info = tileData.layers.sort((a, b) => b.features.length - a.features.length).map((layer) => {
 
 			totalFeatures += layer.features.length;
 			totalKeys += layer.keys.length;
@@ -322,7 +323,7 @@ class UI {
 
 		});
 
-		Log.title("Tile information")
+		Log.title("Tile information");
 		Log.log(
 			ColoredString.format(ColoredString.green, "Layers in this tile: "),
 			ColoredString.format(ColoredString.white, info.length)

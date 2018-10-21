@@ -146,10 +146,15 @@ class VTWriter {
 
 		const rows = await self.db.get("SELECT * FROM metadata WHERE name='bounds'");
 
-		if(rows) 
+		if (rows) {
+
 			return self.db.run(`UPDATE metadata SET value="${bounds}" WHERE name='bounds'`);
-		else
+
+		} else {
+
 			return self.db.run(`INSERT INTO metadata(name, value) VALUES("bounds", "${bounds}")`);
+
+		}
 
 		// Update center
 		// Update minzoom & maxzoom

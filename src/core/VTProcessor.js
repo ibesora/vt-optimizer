@@ -25,12 +25,12 @@ class VTProcessor {
 		const taskRunner = new Listr(tasks);
 		taskRunner.run().then(
 			async () => {
-				
+
 				const {vtSummary, tiles} = await VTProcessor.logInfo(reader);
-				UI.printMetadata(reader.metadata.minzoom, reader.metadata.mazoom, reader.metadata.format, 
+				UI.printMetadata(reader.metadata.minzoom, reader.metadata.mazoom, reader.metadata.format,
 					reader.metadata.center, reader.layers);
 				VTProcessor.infoLoop(reader, vtSummary, tiles);
-				
+
 			},
 			err => Log.error(err)
 		);
@@ -53,7 +53,7 @@ class VTProcessor {
 
 		} catch (err) {
 
-			Log.error(err)
+			Log.error(err);
 
 		}
 
@@ -61,20 +61,20 @@ class VTProcessor {
 
 	static async infoLoop(reader, vtSummary, tiles) {
 
-		UI.printSummaryTable(vtSummary, tiles, VTProcessor.avgTileSizeLimit, VTProcessor.avgTileSizeWarning);
+		UI.printSummaryTable(vtSummary, tiles, VTProcessor.avgTileSizeLimit, VTProcessor.avgTileSizeWarning, reader.tileSizeLimit);
 
-		while(await UI.wantMoreInfoQuestion()) {
+		while (await UI.wantMoreInfoQuestion()) {
 
 			const selectedLevel = await UI.selectLevelPrompt(vtSummary, VTProcessor.avgTileSizeLimit, VTProcessor.avgTileSizeWarning);
 			const {data, buckets} = await VTProcessor.computeLevelInfo(reader, selectedLevel);
 			UI.showTileDistributionData(data, VTProcessor.avgTileSizeLimit, VTProcessor.avgTileSizeWarning);
-			
-			while(await UI.tilesInBucketQuestion()) {
+
+			while (await UI.tilesInBucketQuestion()) {
 
 				const selectedBucket = await UI.selectBucketPrompt(data);
 				UI.showBucketInfo(buckets[selectedBucket], reader.tileSizeLimit);
 
-				while(await UI.tileInfoQuestion()) {
+				while (await UI.tileInfoQuestion()) {
 
 					const tileIndex = await UI.selectTilePrompt(buckets[selectedBucket], reader.tileSizeLimit);
 					const tileData = await VTProcessor.computeTileData(reader, tileIndex.zoom_level, tileIndex.tile_column, tileIndex.tile_row);
@@ -90,7 +90,7 @@ class VTProcessor {
 			UI.printSummaryTable(vtSummary, tiles, VTProcessor.avgTileSizeLimit, VTProcessor.avgTileSizeWarning);
 
 		}
-		
+
 	}
 
 	static async computeLevelInfo(reader, zoomLevel) {
@@ -106,19 +106,19 @@ class VTProcessor {
 		const maxSize = levelTiles[levelTiles.length - 1].size;
 		const totalSize = levelTiles.reduce((accum, elem) => accum + elem.size, 0);
 		const totalNumTiles = levelTiles.length;
-		const bucketSize = (maxSize - minSize)/numBuckets;
+		const bucketSize = (maxSize - minSize) / numBuckets;
 		let currentBucketMaxSize = minSize + bucketSize;
 		let processedTilesSize = 0;
 
-		for(let i=0; i<totalNumTiles; ++i) {
+		for (let i = 0; i < totalNumTiles; ++i) {
 
-			if(levelTiles[i].size<=currentBucketMaxSize) {
+			if (levelTiles[i].size <= currentBucketMaxSize) {
 
 				tiles.push(levelTiles[i]);
 
 			} else {
 
-				VTProcessor.addTilesToBucket(minSize, currentBucketMaxSize, totalNumTiles, 
+				VTProcessor.addTilesToBucket(minSize, currentBucketMaxSize, totalNumTiles,
 					totalSize, tiles, i, processedTilesSize, buckets, data);
 
 				tiles = [levelTiles[i]];
@@ -131,7 +131,7 @@ class VTProcessor {
 
 		}
 
-		VTProcessor.addTilesToBucket(minSize, currentBucketMaxSize, totalNumTiles, 
+		VTProcessor.addTilesToBucket(minSize, currentBucketMaxSize, totalNumTiles,
 			totalSize, tiles, totalNumTiles, processedTilesSize, buckets, data);
 
 		return {data, buckets};
@@ -141,30 +141,30 @@ class VTProcessor {
 	static addTilesToBucket(minSize, maxSize, totalNumTiles, totalSize, tiles, processedTiles, processedTilesSize, buckets, data) {
 
 		const currentBucketSize = tiles.reduce((accum, elem) => accum + elem.size, 0);
-		const currentBucketSizePc = (currentBucketSize/totalSize) * 100.0;
-		const currentPc = (tiles.length/totalNumTiles) * 100.0;
-		let runningAvgSize = (processedTilesSize / processedTiles);
+		const currentBucketSizePc = (currentBucketSize / totalSize) * 100.0;
+		const currentPc = (tiles.length / totalNumTiles) * 100.0;
+		const runningAvgSize = (processedTilesSize / processedTiles);
 		let accumPc = 0;
 		let accumBucketSizePc = 0;
 
-		if(data.length !== 0) {
+		if (data.length !== 0) {
 
-			accumPc = data[data.length-1].accumPc;	// Restore previous accumulated %
-			accumBucketSizePc = data[data.length-1].accumBucketSizePc;	// Restore previous accumulated bucket size %
+			accumPc = data[data.length - 1].accumPc;	// Restore previous accumulated %
+			accumBucketSizePc = data[data.length - 1].accumBucketSizePc;	// Restore previous accumulated bucket size %
 
 		}
 
 		accumPc += currentPc;
-		accumBucketSizePc += currentBucketSizePc
+		accumBucketSizePc += currentBucketSizePc;
 
 		data.push({
-			minSize, 
-			maxSize, 
-			length: tiles.length, 
-			runningAvgSize, 
-			currentPc, 
-			currentBucketSizePc, 
-			accumPc, 
+			minSize,
+			maxSize,
+			length: tiles.length,
+			runningAvgSize,
+			currentPc,
+			currentBucketSizePc,
+			accumPc,
 			accumBucketSizePc
 		});
 		buckets.push(tiles);

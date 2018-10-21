@@ -212,7 +212,7 @@ class VTReader {
 			const rowData = await self.db.get(`SELECT tile_data, length(tile_data) as size FROM tiles WHERE zoom_level=${zoomLevel} AND tile_column=${column} AND tile_row=${row}`);
 			const data = await new Promise((resolve) => {
 
-				self.unzipTileData(rowData["tile_data"], resolve, reject)
+				self.unzipTileData(rowData["tile_data"], resolve, reject);
 
 			});
 
@@ -262,7 +262,11 @@ class VTReader {
 
 			self.db.all(`SELECT zoom_level, tile_column, tile_row, length(tile_data) as size FROM tiles WHERE zoom_level=${level}`).then((rows) => {
 
-				resolve(rows.map(row => { return { zoom_level: row.zoom_level, tile_column: row.tile_column, tile_row: row.tile_row, size: row.size/1024.0} }));
+				resolve(rows.map(row => {
+
+					return { zoom_level: row.zoom_level, tile_column: row.tile_column, tile_row: row.tile_row, size: row.size / 1024.0};
+
+				}));
 
 			});
 
