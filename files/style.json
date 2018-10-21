@@ -1,0 +1,18 @@
+{
+    "version": 8,
+    "name": "Trails test",
+    "sources": {},
+    "layers": [
+		{
+			"id": "water",
+    		"source": "mapbox-streets",
+			"source-layer": "water",
+			"type": "fill",
+			"paint": {
+				"fill-color": "#00ffff"
+			},
+			"minzoom": 1,
+			"maxzoom": 21
+		}
+	]
+}
