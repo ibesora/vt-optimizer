@@ -93,7 +93,7 @@ class VTReader {
 		const self = this;
 
 		const data = JSON.parse(self.metadata["json"]);
-		self.layers = data["vector_layers"].map((layer) => layer.id);
+		self.layers = data["vector_layers"].map((layer) => layer.id).sort();
 
 	}
 
@@ -182,7 +182,13 @@ class VTReader {
 
 		const self = this;
 
-		zlib.gunzip(self.data[`${zoomLevel}_${column}_${row}`], (err, buffer) => {
+		self.unzipTileData(self.data[`${zoomLevel}_${column}_${row}`], resolve, reject);
+
+	}
+
+	unzipTileData(data, resolve, reject) {
+
+		zlib.gunzip(data, (err, buffer) => {
 
 			if (err) {
 
@@ -190,8 +196,8 @@ class VTReader {
 
 			}
 
-			self.data[`${zoomLevel}_${column}_${row}`] = Tile.read(new Pbf(buffer));
-			resolve(self.data[`${zoomLevel}_${column}_${row}`]);
+			data = Tile.read(new Pbf(buffer));
+			resolve(data);
 
 		});
 
@@ -206,18 +212,7 @@ class VTReader {
 			const rowData = await self.db.get(`SELECT tile_data, length(tile_data) as size FROM tiles WHERE zoom_level=${zoomLevel} AND tile_column=${column} AND tile_row=${row}`);
 			const data = await new Promise((resolve) => {
 
-				zlib.gunzip(rowData["tile_data"], (err, buffer) => {
-
-					if (err) {
-
-						reject(err);
-
-					}
-
-					rowData["tile_data"] = Tile.read(new Pbf(buffer));
-					resolve(rowData);
-
-				});
+				self.unzipTileData(rowData["tile_data"], resolve, reject)
 
 			});
 
@@ -243,7 +238,7 @@ class VTReader {
 
 			}
 
-			self.db.all("SELECT zoom_level, COUNT(tile_column) as tiles, SUM(length(tile_data)) as size, AVG(length(tile_data)) as avgTileSize FROM tiles GROUP BY zoom_level ORDER BY zoom_level ASC").then((rows) => {
+			self.db.all("SELECT zoom_level, COUNT(tile_column) as tiles, SUM(length(tile_data)) as size, AVG(length(tile_data)) as avgTileSize, MAX(length(tile_data)) as maxSize  FROM tiles GROUP BY zoom_level ORDER BY zoom_level ASC").then((rows) => {
 
 				resolve(rows);
 
