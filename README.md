@@ -1,6 +1,9 @@
 # Vector Tile optimizer
 
 [![Build Status Linux](https://travis-ci.org/ibesora/vt-optimizer.svg?branch=master)](https://travis-ci.org/ibesora/vt-optimizer)
+[![Dependency Status](https://david-dm.org/ibesora/vt-optimizer.svg)][dm-prod]
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)][license]
+
 > A small NodeJS cli tool to inspect and optimize [Mapbox Vector Tiles](https://www.mapbox.com/vector-tiles/) files
 
 <img src="media/example.gif">
