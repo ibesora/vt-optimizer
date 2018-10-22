@@ -5,6 +5,7 @@
 const Inquirer = require("inquirer");
 const ColoredString = require("./core/ColoredString");
 const Log = require("./core/Log");
+const Utils = require("./core/Utils");
 
 class UI {
 
@@ -258,7 +259,8 @@ class UI {
 
 		const size = `${tile.size} KB`;
 		const tileSizeMessage = (tile.size > tileSizeLimit ? ColoredString.red(size) : size);
-		return `${tile.zoom_level}/${tile.tile_column}/${tile.tile_row} - ${tileSizeMessage}`;
+		const {lon, lat} = Utils.tile2LonLat(tile.zoom_level, tile.tile_row, tile.tile_column);
+		return `${tile.zoom_level}/${tile.tile_column}/${tile.tile_row} - ${tileSizeMessage} - LonLat: [${lon}, ${lat}]`;
 
 	}
 
@@ -358,7 +360,7 @@ class UI {
 
 		}
 
-		const names = Object.keys(removedLayers.perLayerName);
+		const names = Object.keys(removedLayers.perLayerName).sort();
 		for (const name of names) {
 
 			const layerData = removedLayers.perLayerName[name];
