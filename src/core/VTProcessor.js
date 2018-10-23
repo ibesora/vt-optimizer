@@ -19,7 +19,7 @@ class VTProcessor {
 		const reader = new VTReader(filename);
 
 		const tasks = [
-			{title: "Parsing VT file contents", task: () => reader.open()}
+			{title: "Parsing VT file contents", task: () => reader.open().catch((err) => { throw new Error(err) })}
 		];
 
 		const taskRunner = new Listr(tasks);
@@ -188,11 +188,13 @@ class VTProcessor {
 		const tasks = [
 			{
 				title: "Parsing VT file contents",
-				task: () => reader.open(true)
+				task: () => reader.open(true).catch(err => { throw new Error(err)} )
 			},
 			{
 				title: "Parsing the style file",
-				task: () => style.open()
+				task: () => {
+					style.open()
+				}
 			},
 			{
 				title: "Processing tiles",
@@ -241,11 +243,15 @@ class VTProcessor {
 		];
 
 		const taskRunner = new Listr(tasks);
-		taskRunner.run().then(ctx => UI.printSlimProcessResults(ctx.removedLayers)).catch(err => {
+		taskRunner.run()
+			.then(
+				ctx => UI.printSlimProcessResults(ctx.removedLayers)
+			)
+			.catch(err => {
 
-			Log.error(err);
+				Log.error(err);
 
-		});
+			});
 
 	}
 

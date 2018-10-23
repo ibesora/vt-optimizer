@@ -2,7 +2,6 @@
 "use strict";
 
 const sqlite3 = require("sqlite3");
-const Log = require("./Log");
 
 class SQLite {
 
@@ -16,7 +15,7 @@ class SQLite {
 
 		return new Promise((resolve, reject) => {
 
-			this.db = new sqlite3.Database(fileName, (error) => {
+			this.db = new sqlite3.Database(fileName, sqlite3.OPEN_READWRITE, (error) => {
 
 				if (error === null) {
 
@@ -24,8 +23,7 @@ class SQLite {
 
 				} else {
 
-					Log.error("SQLite::open ", error, "while trying to open the following file:", fileName);
-					reject(error);
+					reject(`SQLite::open ${error.message} while trying to open the following file: ${fileName}`);
 
 				}
 
@@ -47,8 +45,7 @@ class SQLite {
 
 				} else {
 
-					Log.error("SQLite::get ", error, "while running the following query:", sql);
-					reject(error);
+					reject(`SQLite::get ${error.message} while running the following query: ${sql}`);
 
 				}
 
@@ -70,8 +67,7 @@ class SQLite {
 
 				} else {
 
-					Log.error("SQLite::all ", error, "while running the following query:", sql);
-					reject(error);
+					reject(`SQLite::all ${error.message} while running the following query: ${sql}`);
 
 				}
 
@@ -93,8 +89,7 @@ class SQLite {
 
 				} else {
 
-					Log.error("SQLite::run ", error, "while running the following query:", sql);
-					reject(error);
+					reject(`SQLite::run ${error.message} while running the following query: ${sql}`);
 
 				}
 
