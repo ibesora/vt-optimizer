@@ -68,12 +68,12 @@ class MapboxStyleLayer {
 	checkPaintPropertyNotZero(propertyName, level) {
 
 		const self = this;
-		const isObject = self.data.paint && self.data.paint.hasOwnProperty(propertyName) && 
+		const isObject = self.data.paint && self.data.paint.hasOwnProperty(propertyName) &&
 			typeof self.data.paint[propertyName] === "object";
 
 		let isPropertyNotZero = false;
 
-		if(isObject) {
+		if (isObject) {
 
 			isPropertyNotZero = self.checkStopNotZeroInLevel(self.data.paint[propertyName], level);
 
@@ -89,15 +89,17 @@ class MapboxStyleLayer {
 
 	checkStopNotZeroInLevel(stops, level) {
 
-		const self = this;
 		let isNotZero = true;
 
-		if(stops.base && stops.stops) {
+		if (stops.base && stops.stops) {
 
 			const stop = stops.stops.find((elem) => elem[0] === level);
 
-			if(stop)
+			if (stop) {
+
 				isNotZero = stop && stop[1] !== 0;
+
+			}
 
 		}
 

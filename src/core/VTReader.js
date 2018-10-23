@@ -27,33 +27,30 @@ class VTReader {
 
 		return new Promise((resolve, reject) => {
 
-			self.db.open(self.fileName).then(
-				() => {
+			self.db.open(self.fileName)
+				.then(
+					() => {
 
-					self.isOpen = true;
-					self.parseMetadata().then(() => {
+						self.isOpen = true;
+						self.parseMetadata().then(() => {
 
-						if (loadInMemory) {
+							if (loadInMemory) {
 
-							self.loadTiles().then(() => resolve());
+								self.loadTiles().then(() => resolve());
 
-						} else {
+							} else {
 
-							resolve();
+								resolve();
 
-						}
+							}
+
+						},
+						(err) => reject(err)
+						);
 
 					},
 					(err) => reject(err)
-					);
-
-				},
-				(err) => {
-
-					reject(err);
-
-				}
-			);
+				);
 
 		});
 
@@ -71,18 +68,22 @@ class VTReader {
 
 			}
 
-			self.db.all("SELECT * FROM metadata").then((rows) => {
+			self.db.all("SELECT * FROM metadata")
+				.then(
+					(rows) => {
 
-				self.metadata = rows.reduce((obj, val) => {
+						self.metadata = rows.reduce((obj, val) => {
 
-					obj[val.name] = val.value;
-					return obj;
+							obj[val.name] = val.value;
+							return obj;
 
-				}, {});
-				self.parseLayers();
-				resolve();
+						}, {});
+						self.parseLayers();
+						resolve();
 
-			});
+					},
+					(err) => reject(err)
+				);
 
 		});
 
@@ -109,11 +110,15 @@ class VTReader {
 
 			}
 
-			self.db.all("SELECT zoom_level, tile_column, tile_row FROM tiles ORDER BY zoom_level ASC").then((rows) => {
+			self.db.all("SELECT zoom_level, tile_column, tile_row FROM tiles ORDER BY zoom_level ASC")
+				.then(
+					(rows) => {
 
-				resolve(rows);
+						resolve(rows);
 
-			});
+					},
+					(err) => reject(err)
+				);
 
 		});
 
@@ -133,18 +138,22 @@ class VTReader {
 
 			if (!self.hasData) {
 
-				self.db.all("SELECT zoom_level, tile_column, tile_row, tile_data FROM tiles ORDER BY zoom_level ASC").then((rows) => {
+				self.db.all("SELECT zoom_level, tile_column, tile_row, tile_data FROM tiles ORDER BY zoom_level ASC")
+					.then(
+						(rows) => {
 
-					self.hasData = true;
-					self.data = rows.reduce((obj, val) => {
+							self.hasData = true;
+							self.data = rows.reduce((obj, val) => {
 
-						obj[`${val["zoom_level"]}_${val["tile_column"]}_${val["tile_row"]}`] = val["tile_data"];
-						return obj;
+								obj[`${val["zoom_level"]}_${val["tile_column"]}_${val["tile_row"]}`] = val["tile_data"];
+								return obj;
 
-					}, {});
-					resolve(rows);
+							}, {});
+							resolve(rows);
 
-				});
+						},
+						(err) => reject(err)
+					);
 
 			}
 
@@ -238,11 +247,15 @@ class VTReader {
 
 			}
 
-			self.db.all("SELECT zoom_level, COUNT(tile_column) as tiles, SUM(length(tile_data)) as size, AVG(length(tile_data)) as avgTileSize, MAX(length(tile_data)) as maxSize  FROM tiles GROUP BY zoom_level ORDER BY zoom_level ASC").then((rows) => {
+			self.db.all("SELECT zoom_level, COUNT(tile_column) as tiles, SUM(length(tile_data)) as size, AVG(length(tile_data)) as avgTileSize, MAX(length(tile_data)) as maxSize  FROM tiles GROUP BY zoom_level ORDER BY zoom_level ASC")
+				.then(
+					(rows) => {
 
-				resolve(rows);
+						resolve(rows);
 
-			});
+					},
+					(err) => reject(err)
+				);
 
 		});
 
@@ -260,15 +273,19 @@ class VTReader {
 
 			}
 
-			self.db.all(`SELECT zoom_level, tile_column, tile_row, length(tile_data) as size FROM tiles WHERE zoom_level=${level}`).then((rows) => {
+			self.db.all(`SELECT zoom_level, tile_column, tile_row, length(tile_data) as size FROM tiles WHERE zoom_level=${level}`)
+				.then(
+					(rows) => {
 
-				resolve(rows.map(row => {
+						resolve(rows.map(row => {
 
-					return { zoom_level: row.zoom_level, tile_column: row.tile_column, tile_row: row.tile_row, size: row.size / 1024.0};
+							return { zoom_level: row.zoom_level, tile_column: row.tile_column, tile_row: row.tile_row, size: row.size / 1024.0};
 
-				}));
+						}));
 
-			});
+					},
+					(err) => reject(err)
+				);
 
 		});
 
@@ -289,11 +306,15 @@ class VTReader {
 
 			}
 
-			self.db.all(`SELECT zoom_level, COUNT(*) as num FROM tiles WHERE length(tile_data) > ${VTReader.tileSizeLimit * 1024} GROUP BY zoom_level ORDER BY zoom_level ASC`).then((rows) => {
+			self.db.all(`SELECT zoom_level, COUNT(*) as num FROM tiles WHERE length(tile_data) > ${VTReader.tileSizeLimit * 1024} GROUP BY zoom_level ORDER BY zoom_level ASC`)
+				.then(
+					(rows) => {
 
-				resolve(rows);
+						resolve(rows);
 
-			});
+					},
+					(err) => reject(err)
+				);
 
 		});
 

@@ -19,7 +19,11 @@ class VTProcessor {
 		const reader = new VTReader(filename);
 
 		const tasks = [
-			{title: "Parsing VT file contents", task: () => reader.open().catch((err) => { throw new Error(err) })}
+			{title: "Parsing VT file contents", task: () => reader.open().catch((err) => {
+
+				throw new Error(err);
+
+			})}
 		];
 
 		const taskRunner = new Listr(tasks);
@@ -188,12 +192,18 @@ class VTProcessor {
 		const tasks = [
 			{
 				title: "Parsing VT file contents",
-				task: () => reader.open(true).catch(err => { throw new Error(err)} )
+				task: () => reader.open(true).catch(err => {
+
+					throw new Error(err);
+
+				})
 			},
 			{
 				title: "Parsing the style file",
 				task: () => {
-					style.open()
+
+					style.open();
+
 				}
 			},
 			{

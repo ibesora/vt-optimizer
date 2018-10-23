@@ -4,7 +4,7 @@
        "mtc25mcomplet": {
             "type": "vector",
             "tiles": [
-                "https://betaserver.icgc.cat/tileserver3/tileserver.php/mtc25mcomplet/{z}/{x}/{y}.pbf"
+                "http://betaserver.icgc.cat/tileserver3/tileserver.php/mtc25mcomplet/{z}/{x}/{y}.pbf"
             ],
             "maxzoom": 16,
             "attribution": "Mapa &copy; <a href='http://www.icgc.cat'>Institut CartogrÃ fic i GeolÃ²gic de Catalunya</a>"
@@ -12,7 +12,7 @@
         "mtc25mtopon": {
             "type": "raster",
             "tiles": [
-                "https://betaserver.icgc.cat/tileserver3/tileserver.php/mtc25mgdb_topon_r/{z}/{x}/{y}.png"
+                "http://betaserver.icgc.cat/tileserver3/tileserver.php/mtc25mgdb_topon_r/{z}/{x}/{y}.png"
             ],
             "maxzoom": 16,
             "attribution": ""
@@ -20,7 +20,7 @@
         "toponimia": {
             "type": "vector",
             "tiles": [
-                "https://betaserver.icgc.cat/tileserver3/tileserver.php/redtopo/{z}/{x}/{y}.pbf"
+                "http://betaserver.icgc.cat/tileserver3/tileserver.php/redtopo/{z}/{x}/{y}.pbf"
             ],
             "maxzoom": 15,
             "attribution": ""
@@ -28,14 +28,14 @@
         "normals": {
             "type": "raster",
             "tiles": [
-                "https://betaserver.icgc.cat/tileserver3/tileserver.php?/norm2x2/{z}/{x}/{y}.png"
+                "http://betaserver.icgc.cat/tileserver3/tileserver.php?/norm2x2/{z}/{x}/{y}.png"
             ],
             "maxzoom": 18,
             "attribution": ""
         }
     },
-    "sprite": "https://betaserver.icgc.cat/vectortiles/sprites/maki",
-    "glyphs": "https://betaserver.icgc.cat/glyphs/{fontstack}/{range}.pbf",
+    "sprite": "http://betaserver.icgc.cat/vectortiles/sprites/maki",
+    "glyphs": "http://betaserver.icgc.cat/glyphs/{fontstack}/{range}.pbf",
     "layers": [
     {
     "interactive": true,
