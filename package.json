@@ -32,6 +32,7 @@
     "listr": "^0.14.2",
     "pbf": "^3.1.0",
     "rxjs": "^6.3.3",
+    "simplify-geojson": "^1.0.3",
     "sqlite3": "^4.0.2"
   },
   "devDependencies": {

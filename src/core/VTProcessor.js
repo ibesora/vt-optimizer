@@ -4,9 +4,11 @@
 
 const Listr = require("Listr");
 const { Observable } = require("rxjs");
+const DataConverter = require("./DataConverter");
 const IO = require("./IO");
 const Log = require("./Log");
 const MapboxStyle = require("./MapboxStyle");
+const Simplifier = require("./Simplifier");
 const UI = require("../UI");
 const Utils = require("./Utils");
 const VTReader = require("./VTReader");
@@ -241,8 +243,7 @@ class VTProcessor {
 						} catch (error) {
 
 							IO.deleteFileSync(outputFileName);
-							Log.error(error);
-							reject();
+							reject(error);
 
 						}
 
@@ -256,12 +257,9 @@ class VTProcessor {
 		taskRunner.run()
 			.then(
 				ctx => UI.printSlimProcessResults(ctx.removedLayers)
-			)
-			.catch(err => {
-
-				Log.error(err);
-
-			});
+				,
+				err => Log.error(err)
+			);
 
 	}
 
@@ -349,6 +347,130 @@ class VTProcessor {
 		}
 
 		layerSet.perLayerName[layer.name].add(zoomLevel);
+
+	}
+
+	static simplifyTileLayer(inputFile, zoomLevel, column, row, layerName, tolerance) {
+
+		const reader = new VTReader(inputFile);
+		const writer = new VTWriter(inputFile);
+
+		const tasks = [
+			{
+				title: "Opening VT",
+				task: () => reader.open().catch(err => {
+
+					throw new Error(err);
+
+				})
+			},
+			{
+				title: "Reading tile",
+				task: (ctx) => {
+
+					return new Promise(async (resolve, reject) => {
+
+						await reader.getTileData(zoomLevel, column, row)
+							.then(data => {
+
+								ctx.tileData = data;
+								resolve();
+
+							},
+							(err) => reject(err)
+							);
+
+					});
+
+				}
+			},
+			{
+				title: "Converting to GeoJSON",
+				task: (ctx) => {
+
+					return new Promise((resolve, reject) => {
+
+						DataConverter.mVTLayer2GeoJSON(ctx.tileData.layers[layerName], zoomLevel, column, row)
+							.then((data) => {
+
+								ctx.geojson = data;
+								resolve();
+
+							},
+							(err) => reject(err)
+							);
+
+					});
+
+				}
+			},
+			{
+				title: "Simplifying geometries",
+				task: (ctx) => {
+
+					return new Promise((resolve, reject) => {
+
+						Simplifier.simplifyGeoJSON(ctx.geojson, tolerance)
+							.then(data => {
+
+								ctx.geojson = data;
+								resolve();
+
+							},
+							(err) => reject(err)
+							);
+
+					});
+
+				}
+			},
+			{
+				title: "Converting back to MVT",
+				task: (ctx) => {
+
+					return new Promise((resolve, reject) => {
+
+						DataConverter.geoJSON2MVTLayer(ctx.geojson)
+							.then((data) => {
+
+								ctx.mvt = data;
+								resolve();
+
+							},
+							(err) => reject(err)
+							);
+
+					});
+
+				}
+			},
+			{
+				title: `Updating file ${inputFile}`,
+				task: (ctx) => {
+
+					return new Promise(async (resolve, reject) => {
+
+						try {
+
+							await writer.open();
+							await writer.writeTile(ctx.mvt, zoomLevel, column, row);
+							resolve();
+
+						} catch (error) {
+
+							reject(error);
+
+						}
+
+					});
+
+				}
+			}
+		];
+
+		const taskRunner = new Listr(tasks);
+		taskRunner.run()
+			.catch(err => Log.error(err));
 
 	}
 
