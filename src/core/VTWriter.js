@@ -156,10 +156,14 @@ class VTWriter {
 
 		}
 
-		// Update center
-		// Update minzoom & maxzoom
-		// Update filesize
-		// Update json
+	}
+
+	async writeTile(binaryBuffer, z, y, x) {
+
+		const self = this;
+
+		const compressedBuffer = zlib.gzipSync(binaryBuffer);
+		await self.updateImage(z, x, y, compressedBuffer);
 
 	}
 

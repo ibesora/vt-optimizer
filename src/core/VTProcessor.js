@@ -278,6 +278,7 @@ class VTProcessor {
 
 					await reader.getTileData(tileIndex.zoom_level, tileIndex.tile_column, tileIndex.tile_row).then(data => {
 
+						delete data.rawPBF;
 						VTProcessor.addTileLayersIfVisible(styleParser, data, tileIndex, newVTData, removedLayers);
 
 						if (tileIndex.zoom_level !== lastLevelProcessed || (loopIndex % 100 === 0)) {
@@ -390,10 +391,10 @@ class VTProcessor {
 
 					return new Promise((resolve, reject) => {
 
-						DataConverter.mVTLayer2GeoJSON(ctx.tileData.layers[layerName], zoomLevel, column, row)
+						DataConverter.mVTLayers2GeoJSON(ctx.tileData.rawPBF, zoomLevel, column, row)
 							.then((data) => {
 
-								ctx.geojson = data;
+								ctx.geojsons = data;
 								resolve();
 
 							},
@@ -410,10 +411,20 @@ class VTProcessor {
 
 					return new Promise((resolve, reject) => {
 
-						Simplifier.simplifyGeoJSON(ctx.geojson, tolerance)
+						const layerToSimplify = ctx.geojsons[layerName];
+
+						if (!layerToSimplify) {
+
+							reject(`There is not a layer with name ${layerName} in the specified tile`);
+
+						}
+
+						ctx.startingCoordinatesNum = layerToSimplify.features.reduce((accum, elem) => accum + elem.geometry.coordinates.length, 0);
+						Simplifier.simplifyGeoJSON(layerToSimplify, tolerance)
 							.then(data => {
 
-								ctx.geojson = data;
+								ctx.simplifiedCoordinatesNum = data.features.reduce((accum, elem) => accum + elem.geometry.coordinates.length, 0);
+								ctx.geojsons[layerName] = data;
 								resolve();
 
 							},
@@ -430,7 +441,7 @@ class VTProcessor {
 
 					return new Promise((resolve, reject) => {
 
-						DataConverter.geoJSON2MVTLayer(ctx.geojson)
+						DataConverter.geoJSONs2VTPBF(ctx.geojsons, row, column, zoomLevel)
 							.then((data) => {
 
 								ctx.mvt = data;
@@ -470,6 +481,11 @@ class VTProcessor {
 
 		const taskRunner = new Listr(tasks);
 		taskRunner.run()
+			.then(ctx => {
+
+				Log.log(`Tile reduction ${((1.0 - ctx.simplifiedCoordinatesNum / ctx.startingCoordinatesNum) * 100.0).toFixed(2)}% (from ${ctx.startingCoordinatesNum} to ${ctx.simplifiedCoordinatesNum} vertices)`);
+
+			})
 			.catch(err => Log.error(err));
 
 	}

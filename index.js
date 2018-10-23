@@ -22,10 +22,15 @@ try {
 
 			VTProcessor.slim(options.mbtiles, options.style, options.out);
 
+		} else if(options.row) {
+
+			VTProcessor.simplifyTileLayer(options.mbtiles, parseInt(options.zoom), 
+				parseInt(options.column), parseInt(options.row), 
+				options.layer, parseFloat(options.tolerance));
+
 		} else {
 
-			// No style file found
-			// Just show info about the VT
+			// Examination mode
 			VTProcessor.showInfo(options.mbtiles)
 
 		}

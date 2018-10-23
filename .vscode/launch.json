@@ -25,6 +25,26 @@
 				"-s",
 				"files/styleCatOff.json"
 			]
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Simplifier",
+			"program": "${workspaceFolder}\\index.js",
+			"args": [
+				"-m",
+				"files/0.mbtiles",
+				"-x",
+				"79",
+				"-y",
+				"64", 
+				"-z",
+				"7", 
+				"-l", 
+				"z_7mtc_vials",
+				"-t", 
+				"0.01"
+			]
 		}
 	]
 }

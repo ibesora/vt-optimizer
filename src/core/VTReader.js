@@ -206,6 +206,7 @@ class VTReader {
 			}
 
 			data = Tile.read(new Pbf(buffer));
+			data.rawPBF = buffer;
 			resolve(data);
 
 		});

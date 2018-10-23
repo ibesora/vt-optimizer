@@ -1,18 +1,42 @@
 // @flow
 "use strict";
 
+const geojsonvt = require("geojson-vt");
+const Pbf = require("pbf");
+const { VectorTile } = require("@mapbox/vector-tile");
+const vtpbf = require("vt-pbf");
+const Utils = require("./Utils");
+
 class DataConverter {
 
-	static mVTLayer2GeoJSON(data, zoomLevel, column, row) {
+	static async mVTLayers2GeoJSON(tilePBF, zoomLevel, column, row) {
+
+		const layers = {};
+		const tile = new VectorTile(new Pbf(tilePBF));
+		const layerNames = Object.keys(tile.layers);
+		await Utils.asyncForEach(layerNames, async (layerName) => {
+
+			const geojson = await DataConverter.mVTLayer2GeoJSON(tile, layerName, zoomLevel, column, row);
+			layers[layerName] = geojson;
+
+		});
+
+		return layers;
+
+	}
+
+	static mVTLayer2GeoJSON(tile, layerName, zoomLevel, column, row) {
 
 		return new Promise((resolve) => {
 
 			const features = [];
-			for (let i = 0; i < data.length; ++i) {
 
-				const feature = data.feature(i);
+			const layerObject = tile.layers[layerName];
+			for (let i = 0; i < layerObject.length; ++i) {
+
+				const feature = layerObject.feature(i);
 				const geoJSON = feature.toGeoJSON(row, column, zoomLevel);
-				feature.push(geoJSON);
+				features.push(geoJSON);
 
 			}
 
@@ -22,11 +46,36 @@ class DataConverter {
 
 	}
 
-	static geoJSON2MVTLayer() {
+	static async geoJSONs2VTPBF(geojsons) {
+
+		const tiles = {};
+		const layerNames = Object.keys(geojsons);
+		await Utils.asyncForEach(layerNames, async (layerName) => {
+
+			const tile = await DataConverter.geoJSON2MVTLayer(geojsons[layerName]);
+			tiles[layerName] = tile;
+
+		});
+
+		const buffer = vtpbf.fromGeojsonVt(tiles, {version: 2});
+		const binBuffer = Buffer.from(buffer);
+
+		return binBuffer;
+
+	}
+
+	static geoJSON2MVTLayer(geojson) {
 
 		return new Promise((resolve) => {
 
-			resolve();
+			const tileset = geojsonvt(geojson, {
+				tolerance: 0,
+				maxZoom: 0,
+				indexMaxZoom: 0,
+				indexMaxPoints: 0
+			});
+
+			resolve(tileset.tiles[0]);
 
 		});
 
