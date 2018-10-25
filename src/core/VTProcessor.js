@@ -8,7 +8,6 @@ const DataConverter = require("./DataConverter");
 const IO = require("./IO");
 const Log = require("./Log");
 const MapboxStyle = require("./MapboxStyle");
-const Simplifier = require("./Simplifier");
 const UI = require("../UI");
 const Utils = require("./Utils");
 const VTReader = require("./VTReader");
@@ -406,42 +405,12 @@ class VTProcessor {
 				}
 			},
 			{
-				title: "Simplifying geometries",
+				title: "Simplifying and converting back to MVT",
 				task: (ctx) => {
 
 					return new Promise((resolve, reject) => {
 
-						const layerToSimplify = ctx.geojsons[layerName];
-
-						if (!layerToSimplify) {
-
-							reject(`There is not a layer with name ${layerName} in the specified tile`);
-
-						}
-
-						ctx.startingCoordinatesNum = layerToSimplify.features.reduce((accum, elem) => accum + elem.geometry.coordinates.length, 0);
-						Simplifier.simplifyGeoJSON(layerToSimplify, tolerance)
-							.then(data => {
-
-								ctx.simplifiedCoordinatesNum = data.features.reduce((accum, elem) => accum + elem.geometry.coordinates.length, 0);
-								ctx.geojsons[layerName] = data;
-								resolve();
-
-							},
-							(err) => reject(err)
-							);
-
-					});
-
-				}
-			},
-			{
-				title: "Converting back to MVT",
-				task: (ctx) => {
-
-					return new Promise((resolve, reject) => {
-
-						DataConverter.geoJSONs2VTPBF(ctx.geojsons, row, column, zoomLevel)
+						DataConverter.geoJSONs2VTPBF(ctx.geojsons, layerName, tolerance)
 							.then((data) => {
 
 								ctx.mvt = data;
@@ -481,11 +450,6 @@ class VTProcessor {
 
 		const taskRunner = new Listr(tasks);
 		taskRunner.run()
-			.then(ctx => {
-
-				Log.log(`Tile reduction ${((1.0 - ctx.simplifiedCoordinatesNum / ctx.startingCoordinatesNum) * 100.0).toFixed(2)}% (from ${ctx.startingCoordinatesNum} to ${ctx.simplifiedCoordinatesNum} vertices)`);
-
-			})
 			.catch(err => Log.error(err));
 
 	}

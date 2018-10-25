@@ -34,9 +34,8 @@
     "listr": "^0.14.2",
     "pbf": "^3.1.0",
     "rxjs": "^6.3.3",
-    "simplify-geojson": "^1.0.3",
     "sqlite3": "^4.0.2",
-    "vt-pbf": "^3.1.1"
+    "vt-pbf": "git+https://github.com/ibesora/vt-pbf.git"
   },
   "devDependencies": {
     "chalk": "^2.4.1",
