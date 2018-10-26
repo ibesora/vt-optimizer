@@ -136,20 +136,20 @@ class Utils {
 		const y0 = extent * column;
 		const y2 = 180 - (y + y0) * 360 / size;
 
-		return 360 / Math.PI * Math.atan(Math.exp(y2)) - 90;
+		return 360 / Math.PI * Math.atan(Math.exp(Utils.toRadians(y2))) - 90;
 
 	}
 
 	static vt2World(zoomLevel, column, row, extent, x, y) {
 
 		return {
-			x: Utils.vT2WorldX(zoomLevel, row, extent, x),
-			y: Utils.vT2WorldY(zoomLevel, column, extent, y)
+			lon: Utils.vT2WorldX(zoomLevel, row, extent, x),
+			lat: Utils.vT2WorldY(zoomLevel, column, extent, y)
 		};
 
 	}
 
-	static world2VTX(zoomLevel, row, extent, x) {
+	static worldX2VT(zoomLevel, row, extent, x) {
 
 		const size = extent * Math.pow(2, zoomLevel);
 		const x0 = extent * row;
@@ -158,14 +158,23 @@ class Utils {
 
 	}
 
-	static world2VTY(zoomLevel, column, extent, y) {
+	static worldY2VT(zoomLevel, column, extent, y) {
 
 		const size = extent * Math.pow(2, zoomLevel);
 		const y0 = extent * column;
-		const tan = Math.tan(Utils.toRadians((y + 90) * Math.PI / 360));
+		const tan = Math.tan(((y + 90) * Math.PI / 360));
 		const a = Utils.toDegrees(Math.log(tan));
 
 		return (180 - a) * size / 360 - y0;
+
+	}
+
+	static world2VT(zoomLevel, column, row, extent, lon, lat) {
+
+		return {
+			x: Utils.worldX2VT(zoomLevel, row, extent, lon),
+			y: Utils.worldY2VT(zoomLevel, column, extent, lat)
+		};
 
 	}
 

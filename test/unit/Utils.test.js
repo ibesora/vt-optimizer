@@ -87,7 +87,7 @@ test("Utils", (t) => {
 		const row = 79;
 		const extent = 4096;
 		const coordX = 42.123456;
-		t.ok(almostEqual(Utils.vT2WorldX(zoom, row, extent, Utils.world2VTX(zoom, row, extent, coordX)), coordX));
+		t.ok(almostEqual(Utils.vT2WorldX(zoom, row, extent, Utils.worldX2VT(zoom, row, extent, coordX)), coordX));
 		t.end();
 
 	});
@@ -98,9 +98,7 @@ test("Utils", (t) => {
 		const extent = 4096;
 		const lon = 1.123456;
 		const column = Utils.lon2TileX(lon, zoom);
-		console.log(column, Utils.world2VTY(zoom, column, extent, lon));
-		console.log(Utils.vT2WorldY(zoom, column, extent, Utils.world2VTY(zoom, column, extent, lon)), lon);
-		t.ok(almostEqual(Utils.vT2WorldY(zoom, column, extent, Utils.world2VTY(zoom, column, extent, lon)), lon));
+		t.ok(almostEqual(Utils.vT2WorldY(zoom, column, extent, Utils.worldY2VT(zoom, column, extent, lon)), lon));
 		t.end();
 
 	});
