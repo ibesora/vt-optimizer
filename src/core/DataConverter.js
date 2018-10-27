@@ -46,14 +46,14 @@ class DataConverter {
 
 	}
 
-	static async geoJSONs2VTPBF(geojsons, layerToSimplify, tolerance, zoomLevel, column, row) {
+	static async geoJSONs2VTPBF(geojsons, zoomLevel, column, row, extent) {
 
 		const tiles = {};
 		const layerNames = Object.keys(geojsons);
 		await Utils.asyncForEach(layerNames, async (layerName) => {
 
-			const tile = await DataConverter.geoJSON2MVTLayer(geojsons[layerName], (layerName === layerToSimplify ? tolerance : 0));
-			DataConverter.convertTileCoords(tile, zoomLevel, column, row);
+			const tile = await DataConverter.geoJSON2MVTLayer(geojsons[layerName]);
+			DataConverter.convertTileCoords(tile, zoomLevel, column, row, extent);
 			tiles[layerName] = tile;
 
 		});
@@ -65,12 +65,12 @@ class DataConverter {
 
 	}
 
-	static geoJSON2MVTLayer(geojson, tolerance) {
+	static geoJSON2MVTLayer(geojson) {
 
 		return new Promise((resolve) => {
 
 			const tileset = geojsonvt(geojson, {
-				tolerance: tolerance,
+				tolerance: 0,
 				maxZoom: 0,
 				indexMaxZoom: 0,
 				indexMaxPoints: 0
@@ -82,9 +82,15 @@ class DataConverter {
 
 	}
 
-	static convertTileCoords(tile, zoomLevel, column, row) {
+	static convertTileCoords(tile, zoomLevel, column, row, extent) {
 
 		tile.features.forEach(feature => {
+
+			if (feature.type === 1) {
+
+				feature.geometry = [feature.geometry];
+
+			}
 
 			feature.geometry.forEach(ring => {
 
@@ -92,10 +98,10 @@ class DataConverter {
 
 					const inTileCoordinateX = ring[i];
 					const inTileCoordinateY = ring[i + 1];
-					const worldCoordinateX = DataConverter.tile2WorldCoordinateX(inTileCoordinateX);
-					const worldCoordinateY = DataConverter.tile2WorldCoordinateY(inTileCoordinateY);
-					const vTCoordinateX = DataConverter.world2VTCoordinateX(zoomLevel, row, tile.extent, worldCoordinateX);
-					const vTCoordinateY = DataConverter.world2VTCoordinateY(zoomLevel, column, tile.extent, worldCoordinateY);
+					const worldCoordinateX = Utils.normalized2WorldX(inTileCoordinateX);
+					const worldCoordinateY = Utils.normalized2WorldY(inTileCoordinateY);
+					const vTCoordinateX = Utils.worldX2VT(zoomLevel, row, extent, worldCoordinateX);
+					const vTCoordinateY = Utils.worldY2VT(zoomLevel, column, extent, worldCoordinateY);
 
 					ring[i] = vTCoordinateX;
 					ring[i + 1] = vTCoordinateY;

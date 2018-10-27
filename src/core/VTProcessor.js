@@ -8,6 +8,7 @@ const DataConverter = require("./DataConverter");
 const IO = require("./IO");
 const Log = require("./Log");
 const MapboxStyle = require("./MapboxStyle");
+const Simplifier = require("./Simplifier");
 const UI = require("../UI");
 const Utils = require("./Utils");
 const VTReader = require("./VTReader");
@@ -83,7 +84,8 @@ class VTProcessor {
 
 					const tileIndex = await UI.selectTilePrompt(buckets[selectedBucket], reader.tileSizeLimit);
 					const tileData = await VTProcessor.computeTileData(reader, tileIndex.zoom_level, tileIndex.tile_column, tileIndex.tile_row);
-					UI.showTileInfo(tileData);
+					const vt = await DataConverter.mVTLayers2GeoJSON(tileData.rawPBF, tileIndex.zoom_level, tileIndex.tile_column, tileIndex.tile_row);
+					UI.showTileInfo(tileData, vt);
 					UI.showBucketInfo(buckets[selectedBucket], reader.tileSizeLimit);
 
 				}
@@ -405,12 +407,42 @@ class VTProcessor {
 				}
 			},
 			{
-				title: "Simplifying and converting back to MVT",
+				title: `Simplifying layer ${layerName}`,
 				task: (ctx) => {
 
 					return new Promise((resolve, reject) => {
 
-						DataConverter.geoJSONs2VTPBF(ctx.geojsons, layerName, tolerance)
+						const layerToSimplify = ctx.geojsons[layerName];
+
+						if (!layerToSimplify) {
+
+							reject(`There is not a layer with name ${layerName} in the specified tile`);
+
+						}
+
+						ctx.startingCoordinatesNum = layerToSimplify.features.reduce((accum, elem) => accum + elem.geometry.coordinates.length, 0);
+						Simplifier.simplifyGeoJSON(layerToSimplify, tolerance)
+							.then(data => {
+
+								ctx.simplifiedCoordinatesNum = data.features.reduce((accum, elem) => accum + elem.geometry.coordinates.length, 0);
+								ctx.geojsons[layerName] = data;
+								resolve();
+
+							},
+							(err) => reject(err)
+							);
+
+					});
+
+				}
+			},
+			{
+				title: "Converting back to MVT",
+				task: (ctx) => {
+
+					return new Promise((resolve, reject) => {
+
+						DataConverter.geoJSONs2VTPBF(ctx.geojsons, zoomLevel, column, row, ctx.tileData.layers[0].extent)
 							.then((data) => {
 
 								ctx.mvt = data;
@@ -450,6 +482,11 @@ class VTProcessor {
 
 		const taskRunner = new Listr(tasks);
 		taskRunner.run()
+			.then((ctx) => {
+
+				Log.log(`Layer reduction ${((1.0 - ctx.simplifiedCoordinatesNum / ctx.startingCoordinatesNum) * 100.0).toFixed(2)}% (from ${ctx.startingCoordinatesNum} to ${ctx.simplifiedCoordinatesNum} vertices)`);
+
+			})
 			.catch(err => Log.error(err));
 
 	}

@@ -87,7 +87,7 @@ class VTWriter {
 						Tile.write(element, pbf);
 						const buffer = pbf.finish();
 						const binBuffer = Buffer.from(buffer);
-						const compressedBuffer = zlib.gzipSync(binBuffer);
+						const compressedBuffer = zlib.gzipSync(binBuffer, {level: zlib.constants.Z_BEST_COMPRESSION});
 
 						await self.updateImage(element.zoom_level, element.tile_row, element.tile_column, compressedBuffer);
 
@@ -162,7 +162,7 @@ class VTWriter {
 
 		const self = this;
 
-		const compressedBuffer = zlib.gzipSync(binaryBuffer);
+		const compressedBuffer = zlib.gzipSync(binaryBuffer, {level: zlib.constants.Z_BEST_COMPRESSION});
 		await self.updateImage(z, x, y, compressedBuffer);
 
 	}
