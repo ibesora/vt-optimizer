@@ -50,14 +50,14 @@ class MapboxStyleLayer {
 
 	}
 
-	isRendered() {
+	isRendered(level) {
 
 		const self = this;
 		let isRendered = true;
 
 		for (let i = 0; isRendered && i < PaintPropertiesToCheck.length; ++i) {
 
-			isRendered = self.checkPaintPropertyNotZero(PaintPropertiesToCheck[i]);
+			isRendered = self.checkPaintPropertyNotZero(PaintPropertiesToCheck[i], level);
 
 		}
 
@@ -65,11 +65,45 @@ class MapboxStyleLayer {
 
 	}
 
-	checkPaintPropertyNotZero(propertyName) {
+	checkPaintPropertyNotZero(propertyName, level) {
 
 		const self = this;
+		const isObject = self.data.paint && self.data.paint.hasOwnProperty(propertyName) &&
+			typeof self.data.paint[propertyName] === "object";
 
-		return !self.data.paint || !self.data.paint.hasOwnProperty(propertyName) || self.data.paint[propertyName] !== 0;
+		let isPropertyNotZero = false;
+
+		if (isObject) {
+
+			isPropertyNotZero = self.checkStopNotZeroInLevel(self.data.paint[propertyName], level);
+
+		} else {
+
+			isPropertyNotZero = !self.data.paint || !self.data.paint.hasOwnProperty(propertyName) || self.data.paint[propertyName] !== 0;
+
+		}
+
+		return isPropertyNotZero;
+
+	}
+
+	checkStopNotZeroInLevel(stops, level) {
+
+		let isNotZero = true;
+
+		if (stops.base && stops.stops) {
+
+			const stop = stops.stops.find((elem) => elem[0] === level);
+
+			if (stop) {
+
+				isNotZero = stop && stop[1] !== 0;
+
+			}
+
+		}
+
+		return isNotZero;
 
 	}
 

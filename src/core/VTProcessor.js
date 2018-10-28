@@ -4,9 +4,11 @@
 
 const Listr = require("Listr");
 const { Observable } = require("rxjs");
+const DataConverter = require("./DataConverter");
 const IO = require("./IO");
 const Log = require("./Log");
 const MapboxStyle = require("./MapboxStyle");
+const Simplifier = require("./Simplifier");
 const UI = require("../UI");
 const Utils = require("./Utils");
 const VTReader = require("./VTReader");
@@ -19,7 +21,11 @@ class VTProcessor {
 		const reader = new VTReader(filename);
 
 		const tasks = [
-			{title: "Parsing VT file contents", task: () => reader.open()}
+			{title: "Parsing VT file contents", task: () => reader.open().catch((err) => {
+
+				throw new Error(err);
+
+			})}
 		];
 
 		const taskRunner = new Listr(tasks);
@@ -78,7 +84,8 @@ class VTProcessor {
 
 					const tileIndex = await UI.selectTilePrompt(buckets[selectedBucket], reader.tileSizeLimit);
 					const tileData = await VTProcessor.computeTileData(reader, tileIndex.zoom_level, tileIndex.tile_column, tileIndex.tile_row);
-					UI.showTileInfo(tileData);
+					const vt = await DataConverter.mVTLayers2GeoJSON(tileData.rawPBF, tileIndex.zoom_level, tileIndex.tile_column, tileIndex.tile_row);
+					UI.showTileInfo(tileData, vt);
 					UI.showBucketInfo(buckets[selectedBucket], reader.tileSizeLimit);
 
 				}
@@ -188,11 +195,19 @@ class VTProcessor {
 		const tasks = [
 			{
 				title: "Parsing VT file contents",
-				task: () => reader.open(true)
+				task: () => reader.open(true).catch(err => {
+
+					throw new Error(err);
+
+				})
 			},
 			{
 				title: "Parsing the style file",
-				task: () => style.open()
+				task: () => {
+
+					style.open();
+
+				}
 			},
 			{
 				title: "Processing tiles",
@@ -229,8 +244,7 @@ class VTProcessor {
 						} catch (error) {
 
 							IO.deleteFileSync(outputFileName);
-							Log.error(error);
-							reject();
+							reject(error);
 
 						}
 
@@ -241,11 +255,12 @@ class VTProcessor {
 		];
 
 		const taskRunner = new Listr(tasks);
-		taskRunner.run().then(ctx => UI.printSlimProcessResults(ctx.removedLayers)).catch(err => {
-
-			Log.error(err);
-
-		});
+		taskRunner.run()
+			.then(
+				ctx => UI.printSlimProcessResults(ctx.removedLayers)
+				,
+				err => Log.error(err)
+			);
 
 	}
 
@@ -264,6 +279,7 @@ class VTProcessor {
 
 					await reader.getTileData(tileIndex.zoom_level, tileIndex.tile_column, tileIndex.tile_row).then(data => {
 
+						delete data.rawPBF;
 						VTProcessor.addTileLayersIfVisible(styleParser, data, tileIndex, newVTData, removedLayers);
 
 						if (tileIndex.zoom_level !== lastLevelProcessed || (loopIndex % 100 === 0)) {
@@ -333,6 +349,145 @@ class VTProcessor {
 		}
 
 		layerSet.perLayerName[layer.name].add(zoomLevel);
+
+	}
+
+	static simplifyTileLayer(inputFile, zoomLevel, column, row, layerName, tolerance) {
+
+		const reader = new VTReader(inputFile);
+		const writer = new VTWriter(inputFile);
+
+		const tasks = [
+			{
+				title: "Opening VT",
+				task: () => reader.open().catch(err => {
+
+					throw new Error(err);
+
+				})
+			},
+			{
+				title: "Reading tile",
+				task: (ctx) => {
+
+					return new Promise(async (resolve, reject) => {
+
+						await reader.getTileData(zoomLevel, column, row)
+							.then(data => {
+
+								ctx.tileData = data;
+								resolve();
+
+							},
+							(err) => reject(err)
+							);
+
+					});
+
+				}
+			},
+			{
+				title: "Converting to GeoJSON",
+				task: (ctx) => {
+
+					return new Promise((resolve, reject) => {
+
+						DataConverter.mVTLayers2GeoJSON(ctx.tileData.rawPBF, zoomLevel, column, row)
+							.then((data) => {
+
+								ctx.geojsons = data;
+								resolve();
+
+							},
+							(err) => reject(err)
+							);
+
+					});
+
+				}
+			},
+			{
+				title: `Simplifying layer ${layerName}`,
+				task: (ctx) => {
+
+					return new Promise((resolve, reject) => {
+
+						const layerToSimplify = ctx.geojsons[layerName];
+
+						if (!layerToSimplify) {
+
+							reject(`There is not a layer with name ${layerName} in the specified tile`);
+
+						}
+
+						ctx.startingCoordinatesNum = layerToSimplify.features.reduce((accum, feature) => accum + feature.geometry.coordinates.reduce((accum, ring) => (ring.length ? accum + ring.length : feature.geometry.coordinates.length / 2), 0), 0);
+						Simplifier.simplifyGeoJSON(layerToSimplify, tolerance)
+							.then(data => {
+
+								ctx.simplifiedCoordinatesNum = data.features.reduce((accum, feature) => accum + feature.geometry.coordinates.reduce((accum, ring) => (ring.length ? accum + ring.length : feature.geometry.coordinates.length / 2), 0), 0);
+								ctx.geojsons[layerName] = data;
+								resolve();
+
+							},
+							(err) => reject(err)
+							);
+
+					});
+
+				}
+			},
+			{
+				title: "Converting back to MVT",
+				task: (ctx) => {
+
+					return new Promise((resolve, reject) => {
+
+						DataConverter.geoJSONs2VTPBF(ctx.geojsons, zoomLevel, column, row, ctx.tileData.layers[0].extent)
+							.then((data) => {
+
+								ctx.mvt = data;
+								resolve();
+
+							},
+							(err) => reject(err)
+							);
+
+					});
+
+				}
+			},
+			{
+				title: `Updating file ${inputFile}`,
+				task: (ctx) => {
+
+					return new Promise(async (resolve, reject) => {
+
+						try {
+
+							await writer.open();
+							await writer.writeTile(ctx.mvt, zoomLevel, column, row);
+							resolve();
+
+						} catch (error) {
+
+							reject(error);
+
+						}
+
+					});
+
+				}
+			}
+		];
+
+		const taskRunner = new Listr(tasks);
+		taskRunner.run()
+			.then((ctx) => {
+
+				Log.log(`Layer reduction ${((1.0 - ctx.simplifiedCoordinatesNum / ctx.startingCoordinatesNum) * 100.0).toFixed(2)}% (from ${ctx.startingCoordinatesNum} to ${ctx.simplifiedCoordinatesNum} vertices)`);
+
+			})
+			.catch(err => Log.error(err));
 
 	}
 

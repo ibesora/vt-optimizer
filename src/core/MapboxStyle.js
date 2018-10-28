@@ -101,7 +101,7 @@ class MapboxStyle {
 
 		return layer &&
 			layer.isVisibleOnZoomLevel(level) &&
-			layer.isRendered() &&
+			layer.isRendered(level) &&
 			!layer.areAllPropertiesFilteredOut();
 
 	}

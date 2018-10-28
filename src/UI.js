@@ -5,6 +5,7 @@
 const Inquirer = require("inquirer");
 const ColoredString = require("./core/ColoredString");
 const Log = require("./core/Log");
+const Utils = require("./core/Utils");
 
 class UI {
 
@@ -258,7 +259,8 @@ class UI {
 
 		const size = `${tile.size} KB`;
 		const tileSizeMessage = (tile.size > tileSizeLimit ? ColoredString.red(size) : size);
-		return `${tile.zoom_level}/${tile.tile_column}/${tile.tile_row} - ${tileSizeMessage}`;
+		const {lon, lat} = Utils.tile2LonLat(tile.zoom_level, tile.tile_row, tile.tile_column);
+		return `${tile.zoom_level}/${tile.tile_column}/${tile.tile_row} - ${tileSizeMessage} - LonLat: [${lon}, ${lat}]`;
 
 	}
 
@@ -308,18 +310,27 @@ class UI {
 
 	}
 
-	static showTileInfo(tileData) {
+	static showTileInfo(tileData, vectorTileLayers) {
 
 		let totalFeatures = 0;
+		let totalVertices = 0;
 		let totalKeys = 0;
 		let totalValues = 0;
 
-		const info = tileData.layers.sort((a, b) => b.features.length - a.features.length).map((layer) => {
+		const layers = tileData.layers.map((layer) => {
+
+			const vtLayer = vectorTileLayers[layer.name];
+			layer.layerVertices = vtLayer.features.reduce((accum, feature) => accum + feature.geometry.coordinates.reduce((accum, ring) => (ring.length ? accum + ring.length : feature.geometry.coordinates.length / 2), 0), 0);
+			return layer;
+
+		});
+		const info = layers.sort((a, b) => b.layerVertices - a.layerVertices).map((layer) => {
 
 			totalFeatures += layer.features.length;
+			totalVertices += layer.layerVertices;
 			totalKeys += layer.keys.length;
 			totalValues += layer.values.length;
-			return [layer.name, layer.features.length, layer.keys.length, layer.values.length];
+			return [layer.name, layer.layerVertices, layer.features.length, layer.keys.length, layer.values.length];
 
 		});
 
@@ -333,6 +344,10 @@ class UI {
 			ColoredString.format(ColoredString.white, totalFeatures)
 		);
 		Log.log(
+			ColoredString.format(ColoredString.green, "Vertices in this tile: "),
+			ColoredString.format(ColoredString.white, totalVertices)
+		);
+		Log.log(
 			ColoredString.format(ColoredString.green, "Keys in this tile: "),
 			ColoredString.format(ColoredString.white, totalKeys)
 		);
@@ -343,7 +358,7 @@ class UI {
 		Log.log(
 			ColoredString.format(ColoredString.green, "Layers: ")
 		);
-		Log.table(["Layer name", "# of features", "# of keys", "# of values"], info);
+		Log.table(["Layer name", "# of vertices", "# of features", "# of keys", "# of values"], info);
 
 	}
 
@@ -358,7 +373,7 @@ class UI {
 
 		}
 
-		const names = Object.keys(removedLayers.perLayerName);
+		const names = Object.keys(removedLayers.perLayerName).sort();
 		for (const name of names) {
 
 			const layerData = removedLayers.perLayerName[name];
