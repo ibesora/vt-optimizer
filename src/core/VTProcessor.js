@@ -420,11 +420,11 @@ class VTProcessor {
 
 						}
 
-						ctx.startingCoordinatesNum = layerToSimplify.features.reduce((accum, elem) => accum + elem.geometry.coordinates.length, 0);
+						ctx.startingCoordinatesNum = layerToSimplify.features.reduce((accum, feature) => accum + feature.geometry.coordinates.reduce((accum, ring) => (ring.length ? accum + ring.length : feature.geometry.coordinates.length / 2), 0), 0);
 						Simplifier.simplifyGeoJSON(layerToSimplify, tolerance)
 							.then(data => {
 
-								ctx.simplifiedCoordinatesNum = data.features.reduce((accum, elem) => accum + elem.geometry.coordinates.length, 0);
+								ctx.simplifiedCoordinatesNum = data.features.reduce((accum, feature) => accum + feature.geometry.coordinates.reduce((accum, ring) => (ring.length ? accum + ring.length : feature.geometry.coordinates.length / 2), 0), 0);
 								ctx.geojsons[layerName] = data;
 								resolve();
 

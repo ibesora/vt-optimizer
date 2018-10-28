@@ -1,7 +1,10 @@
 # Vector Tile optimizer
 
 [![Build Status Linux](https://travis-ci.org/ibesora/vt-optimizer.svg?branch=master)](https://travis-ci.org/ibesora/vt-optimizer)
-> A small NodeJS cli tool to inspect and optimize [Mapbox Vector Tiles](https://www.mapbox.com/vector-tiles/) files
+[![Build status](https://ci.appveyor.com/api/projects/status/7c6haos5thbxrnu4/branch/master?svg=true)](https://ci.appveyor.com/project/ibesora/vt-optimizer/branch/master)
+![Dependency Status](https://david-dm.org/ibesora/vt-optimizer.svg)
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+> A small NodeJS cli tool to inspect and optimize [Mapbox MBTiles files](https://github.com/mapbox/mbtiles-spec) used to encode [Mapbox Vector Tiles](https://www.mapbox.com/vector-tiles/).
 
 <img src="media/example.gif">
 
@@ -50,3 +53,8 @@ It reads both the Vector Tile and style and removes all the layers and features 
 ```
 node --max-old-space-size=16386 index.js -m files/input.mbtiles -s files/style.json -o files/output.mbtiles
 ```
+### Vector Tile layer simplification
+When running the tool with the *-x X -y Y -z Z -l layerName -t tolerance* arguments, the simplification mode will be started. This mode is used for simplifying a layer on a given tile. **Note:** The tolerance value is in degrees (1º is aproximately 110 meters) and tells the algorithm that two points with a distance lower than the tolerance value should be merged.
+
+When the process is finished, the results of the simplification are shown.
+<img src="media/simplify.PNG">
