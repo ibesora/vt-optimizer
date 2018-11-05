@@ -583,7 +583,6 @@ class VTProcessor {
 					});
 
 				}
-
 			},
 			{
 				title: "Converting to GeoJSON",
