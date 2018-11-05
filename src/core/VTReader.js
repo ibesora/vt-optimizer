@@ -2,7 +2,6 @@
 /*eslint camelcase: ["error", {allow: ["zoom_level", "tile_row", "tile_column"]}]*/
 "use strict";
 
-const axios = require("axios");
 const Pbf = require("pbf");
 const zlib = require("zlib");
 const SQLite = require("./SQLite");
@@ -316,23 +315,6 @@ class VTReader {
 
 					},
 					(err) => reject(err)
-				);
-
-		});
-
-	}
-
-	static async loadFromURL(url) {
-
-		return new Promise((resolve, reject) => {
-
-			axios.get(url, {responseType: "arraybuffer"})
-				.then((data) => {
-
-					resolve(data.data);
-
-				},
-				(err) => reject(err)
 				);
 
 		});

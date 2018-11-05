@@ -567,7 +567,7 @@ class VTProcessor {
 
 					return new Promise((resolve, reject) => {
 
-						VTReader.loadFromURL(url)
+						Utils.loadFromURL(url)
 							.then((data) => {
 
 								ctx.pbf = data;
