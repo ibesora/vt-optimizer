@@ -22,18 +22,27 @@ try {
 
 			VTProcessor.slim(options.mbtiles, options.style, options.out);
 
-		} else if(options.row) {
+		} else if(options.tolerance) {
 
 			VTProcessor.simplifyTileLayer(options.mbtiles, parseInt(options.zoom), 
 				parseInt(options.column), parseInt(options.row), 
 				options.layer, parseFloat(options.tolerance));
 
-		} else {
+		} else if(options.row) {
+			VTProcessor.showTileInfo(options.mbtiles, parseInt(options.zoom), 
+				parseInt(options.column), parseInt(options.row));
+		} 
+		else {
 
 			// Examination mode
 			VTProcessor.showInfo(options.mbtiles)
 
 		}
+
+	} else if(options.PBFUrl) {
+
+		VTProcessor.showURLTileInfo(options.PBFUrl, parseInt(options.zoom), 
+				parseInt(options.column), parseInt(options.row));
 
 	} else {
 

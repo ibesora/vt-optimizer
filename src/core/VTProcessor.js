@@ -491,6 +491,134 @@ class VTProcessor {
 
 	}
 
+	static showTileInfo(filename, zoomLevel, column, row) {
+
+		const reader = new VTReader(filename);
+
+		const tasks = [
+			{
+				title: "Opening VT",
+				task: () => reader.open().catch(err => {
+
+					throw new Error(err);
+
+				})
+			},
+			{
+				title: "Reading tile",
+				task: (ctx) => {
+
+					return new Promise(async (resolve, reject) => {
+
+						await reader.getTileData(zoomLevel, column, row)
+							.then(data => {
+
+								ctx.tileData = data;
+								resolve();
+
+							},
+							(err) => reject(err)
+							);
+
+					});
+
+				}
+			},
+			{
+				title: "Converting to GeoJSON",
+				task: (ctx) => {
+
+					return new Promise((resolve, reject) => {
+
+						DataConverter.mVTLayers2GeoJSON(ctx.tileData.rawPBF, zoomLevel, column, row)
+							.then((data) => {
+
+								ctx.geojsons = data;
+								resolve();
+
+							},
+							(err) => reject(err)
+							);
+
+					});
+
+				}
+			}
+		];
+
+		const taskRunner = new Listr(tasks);
+		taskRunner.run().then(
+			async (ctx) => {
+
+				Log.log(JSON.stringify(ctx.geojsons));
+
+			},
+			err => Log.error(err)
+		);
+
+	}
+
+	static showURLTileInfo(url, zoomLevel, column, row) {
+
+		const tasks = [
+			{
+				title: "Downloading PBF",
+				task: (ctx) => {
+
+					return new Promise((resolve, reject) => {
+
+						VTReader.loadFromURL(url)
+							.then((data) => {
+
+								ctx.pbf = data;
+								resolve();
+
+							})
+							.catch(err => {
+
+								reject(err);
+
+							});
+
+					});
+
+				}
+
+			},
+			{
+				title: "Converting to GeoJSON",
+				task: (ctx) => {
+
+					return new Promise((resolve, reject) => {
+
+						DataConverter.mVTLayers2GeoJSON(ctx.pbf, zoomLevel, column, row)
+							.then((data) => {
+
+								ctx.geojsons = data;
+								resolve();
+
+							},
+							(err) => reject(err)
+							);
+
+					});
+
+				}
+			}
+		];
+
+		const taskRunner = new Listr(tasks);
+		taskRunner.run().then(
+			async (ctx) => {
+
+				Log.log(JSON.stringify(ctx.geojsons));
+
+			},
+			err => Log.error(err)
+		);
+
+	}
+
 }
 
 VTProcessor.avgTileSizeWarning = 45;

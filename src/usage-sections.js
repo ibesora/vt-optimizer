@@ -20,6 +20,8 @@ module.exports = [
 			"$ node index.js -m vtFile -s styleFile",
 			"$ node index.js -m vtFile -s styleFile -o outputFile",
 			"$ node index.js -m vtFile -x Row -y Column -z ZoomLevel -l layerName -t tolerance",
+			"$ node index.js -m vtFile -x Row -y Column -z ZoomLevel",
+			"$ node index.js -u url -x Row -y Column -z ZoomLevel",
 			"$ node index.js --help",
 		]
 	},

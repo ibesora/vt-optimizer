@@ -44,6 +44,14 @@ and selecting one of them we can see a summary of the tile contents
 <img src="media/tileInfo.PNG">
 where the number of layers and the number of features and properties of each layer are shown. 
 
+#### Single tile inspection
+
+##### From a local file
+When running the tool with the *-m file.pbf* and *-x X -y Y -z Z* arguments, each layer of the tile contents will be converted to geojson and printed on the console
+
+##### From an url
+When running the tool with the *-u url.pbf* and *-x X -y Y -z Z* arguments, the pbf will be downloaded and each layer of the single tile will be converted to geojson and printed on the console
+
 ### Vector Tile optimization
 When running the tool with the *-m file.mbtiles* and *-s style.json* arguments, the optimization mode will be started. This mode is used for optimizing a Vector Tile when used in conjunction with a style that follows [Mapbox Style Specification](https://www.mapbox.com/mapbox-gl-js/style-spec/). 
 <img src="media/optimization.gif">
