@@ -11,5 +11,6 @@ module.exports = [
 	{name: "zoom", alias: "z", type: String, description: "The Z coordinate of a tile" },
 	{name: "tolerance", alias: "t", type: String, description: "The simplification tolerance" },
 	{name: "layer", alias: "l", type: String, description: "The name of the layer we want to simplify" },
-	{name: "verbose", alias: "b", type: Boolean, description: "Create verbose logs"}
+	{name: "verbose", alias: "b", type: Boolean, description: "Create verbose logs"},
+	{name: "PBFUrl", alias: "u", type: String, description: "The URL of a PBF buffer we want to examine"},
 ];
