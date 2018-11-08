@@ -2,7 +2,7 @@
 /*eslint camelcase: ["error", {allow: ["zoom_level", "tile_row", "tile_column"]}]*/
 "use strict";
 
-const Listr = require("Listr");
+const Listr = require("listr");
 const { Observable } = require("rxjs");
 const DataConverter = require("./DataConverter");
 const IO = require("./IO");

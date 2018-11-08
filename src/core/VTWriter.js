@@ -2,7 +2,7 @@
 /*eslint camelcase: ["error", {allow: ["zoom_level", "tile_row", "tile_column"]}]*/
 "use strict";
 
-const Pbf = require("Pbf");
+const Pbf = require("pbf");
 const zlib = require("zlib");
 const SQLite = require("./SQLite");
 const Utils = require("./Utils");
