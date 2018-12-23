@@ -4,7 +4,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/7c6haos5thbxrnu4/branch/master?svg=true)](https://ci.appveyor.com/project/ibesora/vt-optimizer/branch/master)
 ![Dependency Status](https://david-dm.org/ibesora/vt-optimizer.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-> A small NodeJS cli tool to inspect and optimize [Mapbox MBTiles files](https://github.com/mapbox/mbtiles-spec) used to encode [Mapbox Vector Tiles](https://www.mapbox.com/vector-tiles/).
+> A small NodeJS cli tool to inspect and optimize [Mapbox MBTiles files](https://github.com/mapbox/mbtiles-spec) used to encode [Mapbox Vector Tiles](https://www.mapbox.com/vector-tiles/). You can find an explanation on what it does and how it works in this [blog post](https://medium.com/@ibesora/a-data-driven-journey-through-vector-tile-optimization-4a1dbd4f3a27)
 
 <img src="media/example.gif">
 
