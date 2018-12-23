@@ -45,6 +45,22 @@
 				"-t", 
 				"0.01"
 			]
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Inspect URL",
+			"program": "${workspaceFolder}\\index.js",
+			"args": [
+				"-u",
+				"http://vladivostok.icgc.local:3000/14/8292/6112.pbf",
+				"-x",
+				"6112",
+				"-y",
+				"8292", 
+				"-z",
+				"14"
+			]
 		}
 	]
 }

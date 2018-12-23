@@ -1,6 +1,8 @@
 // @flow
 "use strict";
 
+const axios = require("axios");
+
 class Utils {
 
 	static async asyncForEach(array, callback) {
@@ -175,6 +177,23 @@ class Utils {
 			x: Utils.worldX2VT(zoomLevel, row, extent, lon),
 			y: Utils.worldY2VT(zoomLevel, column, extent, lat)
 		};
+
+	}
+
+	static async loadFromURL(url) {
+
+		return new Promise((resolve, reject) => {
+
+			axios.get(url, {responseType: "arraybuffer"})
+				.then((data) => {
+
+					resolve(data.data);
+
+				},
+				(err) => reject(err)
+				);
+
+		});
 
 	}
 
