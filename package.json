@@ -1,6 +1,6 @@
 {
   "name": "vt-optimizer",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A vector tile size inspector and optimizer",
   "main": "src/index.js",
   "scripts": {
