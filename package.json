@@ -43,10 +43,10 @@
     "vt-pbf": "git+https://github.com/ibesora/vt-pbf.git"
   },
   "devDependencies": {
+    "@geostarters/eslint-config": "0.0.3",
     "chalk": "^2.4.1",
     "coveralls": "^3.0.2",
     "eslint": "^5.7.0",
-    "eslint-config-geostart": "git+https://github.com/geostarters/eslint-config-geostart.git",
     "npm-run-all": "^4.1.5",
     "tap": "^14.6.1"
   }
