@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const CommandLineArgs = require("command-line-args");
 const CommandLineUsage = require("command-line-usage");
 const commandLineOptions = require("./src/command-line-options");
