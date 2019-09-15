@@ -3,6 +3,9 @@
   "version": "0.0.2",
   "description": "A vector tile size inspector and optimizer",
   "main": "src/index.js",
+  "bin": {
+    "vt-optimizer": "./index.js"
+  },
   "scripts": {
     "lint": "eslint --fix --cache --ignore-path .gitignore src",
     "test": "run-s lint test-unit",
@@ -26,7 +29,7 @@
   "homepage": "https://github.com/ibesora/vt-optimizer#readme",
   "dependencies": {
     "@mapbox/vector-tile": "^1.3.1",
-    "axios": "^0.18.0",
+    "axios": "^0.18.1",
     "command-line-args": "^5.0.2",
     "command-line-usage": "^5.0.5",
     "console.table": "^0.10.0",
@@ -36,7 +39,7 @@
     "pbf": "^3.1.0",
     "rxjs": "^6.3.3",
     "simplify-geojson": "^1.0.3",
-    "sqlite3": "^4.0.2",
+    "sqlite3": "^4.1.0",
     "vt-pbf": "git+https://github.com/ibesora/vt-pbf.git"
   },
   "devDependencies": {
@@ -45,6 +48,6 @@
     "eslint": "^5.7.0",
     "eslint-config-geostart": "git+https://github.com/geostarters/eslint-config-geostart.git",
     "npm-run-all": "^4.1.5",
-    "tap": "^12.0.1"
+    "tap": "^14.6.1"
   }
 }
