@@ -34,11 +34,15 @@ class VTProcessor {
 
 				const {vtSummary, tiles} = await VTProcessor.logInfo(reader);
 				UI.printMetadata(reader.metadata.minzoom, reader.metadata.mazoom, reader.metadata.format,
-					reader.metadata.center, reader.layers);
+          reader.metadata.center, reader.layers);
 				VTProcessor.infoLoop(reader, vtSummary, tiles);
 
 			},
-			err => Log.error(err)
+			err => {
+
+				Log.error(err);
+
+			}
 		);
 
 	}
@@ -221,7 +225,12 @@ class VTProcessor {
 							ctx.removedLayers = data.removedLayers;
 							observer.complete();
 
-						});
+						})
+							.catch((errMsg) => {
+
+								observer.error(errMsg);
+
+							});
 
 					});
 
@@ -269,34 +278,50 @@ class VTProcessor {
 		const newVTData = [];
 		const removedLayers = { perLevel: {}, perLayerName: {}};
 
-		return new Promise((resolve) => {
+		return new Promise((resolve, reject) => {
 
-			reader.getTiles().then(async (indexes) => {
+			try {
 
-				let lastLevelProcessed = Infinity;
+				reader.getTiles().then(async (indexes) => {
 
-				await Utils.asyncForEach(indexes, async (tileIndex, loopIndex) => {
+					let lastLevelProcessed = Infinity;
 
-					await reader.getTileData(tileIndex.zoom_level, tileIndex.tile_column, tileIndex.tile_row).then(data => {
+					await Utils.asyncForEach(indexes, async (tileIndex, loopIndex) => {
 
-						delete data.rawPBF;
-						VTProcessor.addTileLayersIfVisible(styleParser, data, tileIndex, newVTData, removedLayers);
+						try {
 
-						if (tileIndex.zoom_level !== lastLevelProcessed || (loopIndex % 100 === 0)) {
+							await reader.getTileData(tileIndex.zoom_level, tileIndex.tile_column, tileIndex.tile_row).then(data => {
 
-							observer.next(`Processing level ${tileIndex.zoom_level} tiles. Current progress: ${((loopIndex / indexes.length) * 100.0).toFixed(4)}%`);
-							lastLevelProcessed = tileIndex.zoom_level;
+								delete data.rawPBF;
+								VTProcessor.addTileLayersIfVisible(styleParser, data, tileIndex, newVTData, removedLayers);
+
+								if (tileIndex.zoom_level !== lastLevelProcessed || (loopIndex % 100 === 0)) {
+
+									observer.next(`Processing level ${tileIndex.zoom_level} tiles. Current progress: ${((loopIndex / indexes.length) * 100.0).toFixed(4)}%`);
+									lastLevelProcessed = tileIndex.zoom_level;
+
+								}
+
+							});
+
+						} catch (err) {
+
+							reject(err);
 
 						}
 
 					});
 
+					observer.complete();
+					resolve({newVTData, removedLayers});
+
 				});
 
-				observer.complete();
-				resolve({newVTData, removedLayers});
+			} catch (err) {
 
-			});
+				reject(err);
+
+			}
 
 		});
 
