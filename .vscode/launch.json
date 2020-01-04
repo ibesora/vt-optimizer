@@ -8,7 +8,7 @@
 			"type": "node",
 			"request": "launch",
 			"name": "Examiner",
-			"program": "${workspaceFolder}\\index.js",
+			"program": "${workspaceFolder}/index.js",
 			"args": [
 				"-m",
 				"files/trails.mbtiles"
@@ -18,7 +18,7 @@
 			"type": "node",
 			"request": "launch",
 			"name": "Optimizer",
-			"program": "${workspaceFolder}\\index.js",
+			"program": "${workspaceFolder}/index.js",
 			"args": [
 				"-m",
 				"files/0.mbtiles",
@@ -30,7 +30,7 @@
 			"type": "node",
 			"request": "launch",
 			"name": "Simplifier",
-			"program": "${workspaceFolder}\\index.js",
+			"program": "${workspaceFolder}/index.js",
 			"args": [
 				"-m",
 				"files/0.mbtiles",
@@ -50,7 +50,7 @@
 			"type": "node",
 			"request": "launch",
 			"name": "Inspect URL",
-			"program": "${workspaceFolder}\\index.js",
+			"program": "${workspaceFolder}/index.js",
 			"args": [
 				"-u",
 				"http://vladivostok.icgc.local:3000/14/8292/6112.pbf",

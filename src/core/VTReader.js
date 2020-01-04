@@ -4,6 +4,7 @@
 
 const Pbf = require("pbf");
 const zlib = require("zlib");
+const Log = require("./Log");
 const SQLite = require("./SQLite");
 const { Tile } = require("./vector-tile");
 
@@ -93,8 +94,17 @@ class VTReader {
 
 		const self = this;
 
-		const data = JSON.parse(self.metadata["json"]);
-		self.layers = data["vector_layers"].map((layer) => layer.id).sort();
+		const data = self.metadata["json"] ? JSON.parse(self.metadata["json"]) : null;
+
+		if (data) {
+
+			self.layers = data["vector_layers"].map((layer) => layer.id).sort();
+
+		} else {
+
+			Log.warning("No vector layers found");
+
+		}
 
 	}
 

@@ -13,46 +13,47 @@ try {
 
 	const options = CommandLineArgs(commandLineOptions);
 
-	if(options.help) {
+	if (options.help) {
 
-		const usage = CommandLineUsage(usageSections)
-		console.log(usage)
+		const usage = CommandLineUsage(usageSections);
+		console.log(usage);
 
-	} else if(options.mbtiles) {
+	} else if (options.mbtiles) {
 
-		if(options.style) {
+		if (options.style) {
 
 			VTProcessor.slim(options.mbtiles, options.style, options.out);
 
-		} else if(options.tolerance) {
+		} else if (options.tolerance) {
 
-			VTProcessor.simplifyTileLayer(options.mbtiles, parseInt(options.zoom), 
-				parseInt(options.column), parseInt(options.row), 
+			VTProcessor.simplifyTileLayer(options.mbtiles, parseInt(options.zoom),
+				parseInt(options.column), parseInt(options.row),
 				options.layer, parseFloat(options.tolerance));
 
-		} else if(options.row) {
-			VTProcessor.showTileInfo(options.mbtiles, parseInt(options.zoom), 
+		} else if (options.row) {
+
+			VTProcessor.showTileInfo(options.mbtiles, parseInt(options.zoom),
 				parseInt(options.column), parseInt(options.row));
-		} 
-		else {
+
+		} else {
 
 			// Examination mode
-			VTProcessor.showInfo(options.mbtiles)
+			VTProcessor.showInfo(options.mbtiles);
 
 		}
 
-	} else if(options.PBFUrl) {
+	} else if (options.PBFUrl) {
 
-		VTProcessor.showURLTileInfo(options.PBFUrl, parseInt(options.zoom), 
+		VTProcessor.showURLTileInfo(options.PBFUrl, parseInt(options.zoom),
 				parseInt(options.column), parseInt(options.row));
 
 	} else {
 
-		Log.info("Wrong usage. Use -h to see the valid arguments.")
+		Log.info("Wrong usage. Use -h to see the valid arguments.");
 
 	}
 
-} catch(err) {
+} catch (err) {
 
 	Log.error(err);
 
