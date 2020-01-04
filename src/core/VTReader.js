@@ -211,7 +211,7 @@ class VTReader {
 
 			if (err) {
 
-				reject(err);
+				reject(new Error(`zlib : ${err.message}`));
 
 			}
 
