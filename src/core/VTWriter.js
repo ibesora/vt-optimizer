@@ -41,7 +41,7 @@ class VTWriter {
 
 	}
 
-	write(data) {
+	write(data, isUsingImagesTable) {
 
 		const self = this;
 
@@ -55,7 +55,7 @@ class VTWriter {
 
 			try {
 
-				await self.updateOrRemoveImages(data);
+				await self.updateOrRemoveTiles(data, isUsingImagesTable);
 				await self.updateMetadata();
 				resolve();
 
@@ -69,7 +69,7 @@ class VTWriter {
 
 	}
 
-	async updateOrRemoveImages(data) {
+	async updateOrRemoveTiles(data, isUsingImagesTable) {
 
 		const self = this;
 
@@ -89,11 +89,23 @@ class VTWriter {
 						const binBuffer = Buffer.from(buffer);
 						const compressedBuffer = zlib.gzipSync(binBuffer, {level: zlib.constants.Z_BEST_COMPRESSION});
 
-						await self.updateImage(element.zoom_level, element.tile_row, element.tile_column, compressedBuffer);
+						if (isUsingImagesTable) {
+
+							await self.updateImage(element.zoom_level, element.tile_row, element.tile_column, compressedBuffer);
+
+						} else {
+
+							await self.updateTile(element.zoom_level, element.tile_row, element.tile_column, compressedBuffer);
+
+						}
+
+					} else if (isUsingImagesTable) {
+
+						await self.deleteImage(element.zoom_level, element.tile_row, element.tile_column);
 
 					} else {
 
-						await self.deleteImage(element.zoom_level, element.tile_row, element.tile_column);
+						await self.deleteTile(element.zoom_level, element.tile_row, element.tile_column);
 
 					}
 
@@ -112,6 +124,22 @@ class VTWriter {
 			}
 
 		});
+
+	}
+
+	updateTile(zoom_level, tile_row, tile_column, data) {
+
+		const self = this;
+
+		return self.db.run(`UPDATE tiles SET tile_data=(?) WHERE zoom_level=${zoom_level} AND tile_row=${tile_row} AND tile_column=${tile_column}`, data);
+
+	}
+
+	deleteTile(zoom_level, tile_row, tile_column) {
+
+		const self = this;
+
+		return self.db.run(`DELETE FROM tiles WHERE zoom_level=${zoom_level} AND tile_row=${tile_row} AND tile_column=${tile_column}`);
 
 	}
 

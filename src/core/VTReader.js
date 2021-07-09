@@ -19,6 +19,7 @@ class VTReader {
 		this.isOpen = false;
 		this.hasData = false;
 		this.data = null;
+		this.hasImagesTable = false;
 
 	}
 
@@ -33,25 +34,54 @@ class VTReader {
 					() => {
 
 						self.isOpen = true;
-						self.parseMetadata().then(() => {
+						self.checkImagesTable().then((hasImagesTable) => {
 
-							if (loadInMemory) {
+							self.hasImagesTable = hasImagesTable;
 
-								self.loadTiles().then(() => resolve());
+							self.parseMetadata().then(() => {
 
-							} else {
+								if (loadInMemory) {
 
-								resolve();
+									self.loadTiles().then(() => resolve());
 
-							}
+								} else {
+
+									resolve();
+
+								}
+
+							},
+              (err) => reject(err)
+							);
 
 						},
-						(err) => reject(err)
+            (err) => reject(err)
 						);
 
 					},
 					(err) => reject(err)
 				);
+
+		});
+
+	}
+
+	checkImagesTable() {
+
+		const self = this;
+		return new Promise((resolve, reject) => {
+
+			if (!self.isOpen) {
+
+				reject("VT not open");
+
+			}
+			self.db.all("SELECT 1 FROM sqlite_master WHERE type='table' and name='images'")
+				.then((rows) => {
+
+					resolve(rows.length !== 0);
+
+				});
 
 		});
 

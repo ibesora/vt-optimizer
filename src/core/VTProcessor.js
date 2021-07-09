@@ -221,6 +221,7 @@ class VTProcessor {
 
 						VTProcessor.slimVT(reader, style, observer).then((data) => {
 
+							ctx.isUsingImagesTable = reader.hasImagesTable;
 							ctx.newVTData = data.newVTData;
 							ctx.removedLayers = data.removedLayers;
 							observer.complete();
@@ -247,7 +248,7 @@ class VTProcessor {
 						try {
 
 							await writer.open();
-							await writer.write(ctx.newVTData);
+							await writer.write(ctx.newVTData, ctx.isUsingImagesTable);
 							resolve();
 
 						} catch (error) {
