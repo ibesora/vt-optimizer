@@ -29,7 +29,7 @@ class MapboxStyleLayer {
 
 		const self = this;
 
-		return !self.data.layout || self.data.layout.visibility === "visible";
+		return !self.data.layout || !self.data.layout.hasOwnProperty("visibility") || self.data.layout.visibility === "visible";
 
 	}
 
