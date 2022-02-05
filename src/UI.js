@@ -382,6 +382,11 @@ class UI {
 		}
 
 		Log.list("Process results", messages);
+		if (messages.length === 0) {
+
+			Log.log("Nothing removed");
+
+		}
 
 	}
 
