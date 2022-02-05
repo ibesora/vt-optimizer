@@ -73,16 +73,23 @@ class MapboxStyle {
 
 	mapLayersToObject(layers) {
 
-		return layers.reduce(
-			(obj, val) => {
+		return layers.reduce((obj, val) => {
 
-				obj[val["source-layer"]] = new MapboxStyleLayer(val);
+			const layerName = val["source-layer"];
+			const layerData = val;
+			if (!obj.hasOwnProperty(layerName)) {
 
-				return obj;
+				// Since a source layer can be used in multiple layers,
+				// we need to store an array of layer definitions and
+				// check everyone of them
+				obj[layerName] = [];
 
-			},
-			{}
-		);
+			}
+			obj[layerName].push(new MapboxStyleLayer(layerData));
+
+			return obj;
+
+		}, {});
 
 	}
 
@@ -97,12 +104,17 @@ class MapboxStyle {
 	isLayerVisibleOnLevel(layerName, level) {
 
 		const self = this;
-		const layer = self.layerDataById[layerName];
+		const layers = self.layerDataById[layerName];
+		return layers.some((l) => {
 
-		return layer &&
-			layer.isVisibleOnZoomLevel(level) &&
-			layer.isRendered(level) &&
-			!layer.areAllPropertiesFilteredOut();
+			return (
+				l &&
+        l.isVisibleOnZoomLevel(level) &&
+        l.isRendered(level) &&
+        !l.areAllPropertiesFilteredOut()
+			);
+
+		});
 
 	}
 
