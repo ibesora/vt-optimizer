@@ -1,0 +1,35 @@
+{
+  "version": 8,
+  "name": "munich test",
+  "sources": {
+    "munich": {
+      "type": "vector",
+      "url": "tileserver/munich.json"
+    }
+  },
+  "layers": [
+    {
+      "id": "circle1",
+      "type": "circle",
+      "source": "munich",
+      "source-layer": "munich",
+      "minzoom": 0,
+      "maxzoom": 2,
+      "paint": {
+        "circle-radius": 6,
+        "circle-color": "#B42222"
+      }
+    },
+    {
+        "id": "circle2",
+        "type": "circle",
+        "source": "munich",
+        "source-layer": "munich",
+        "minzoom": 2,
+        "paint": {
+          "circle-radius": 6,
+          "circle-color": "#2222B4"
+        }
+    }
+  ]
+}
