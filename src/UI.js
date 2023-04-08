@@ -34,16 +34,21 @@ class UI {
 	}
 
 	static printSummaryTable(vtSummary, tiles, avgTileSizeLimit, avgTileSizeWarning, tileSizeLimit) {
-
-		const data = UI.createSummaryTableData(vtSummary, tiles, avgTileSizeLimit, avgTileSizeWarning, tileSizeLimit);
+	    const labels = ["Zoom level", "Tiles", "Total level size (KB)", "Average tile size (KB)", "Max tile size (KB)", ""];
+	    var columnWidths = labels.map((label)=>label.length);
+	    const data = UI.createSummaryTableData(vtSummary, tiles, avgTileSizeLimit, avgTileSizeWarning, tileSizeLimit,columnWidths );
 
 		Log.log("");
 		Log.title("Vector Tile Summary");
-		Log.table(["Zoom level", "Tiles", "Total level size (KB)", "Average tile size (KB)", "Max tile size (KB)", ""], data);
+		Log.table(labels, data);
 
 	}
-
-	static createSummaryTableData(vtSummary, tiles, avgTileSizeLimit, avgTileSizeWarning, tileSizeLimit) {
+    static formatDataPoint(value, columnSize, dontRound){
+		var rounded = dontRound ? value.toString() : value.toFixed(2);
+		var padded  = columnSize ? rounded.padStart(columnSize-1, " ") : rounded;
+		return padded;
+    };
+    static createSummaryTableData(vtSummary, tiles, avgTileSizeLimit, avgTileSizeWarning, tileSizeLimit, columnWidths) {
 
 		const data = [];
 		const bigTiles = tiles.reduce((obj, tile) => {
@@ -63,33 +68,34 @@ class UI {
 			const avgSizeTooBig = (avgTileSizeInKB) > avgTileSizeLimit; // Mapbox recommends an average tile size of 50KB
 			const avgSizeAlmostTooBig = (avgTileSizeInKB) > avgTileSizeWarning;
 			let levelComment = ColoredString.green("✓");
-			let avgSizeMessage = avgTileSizeInKB;
+		    let avgSizeMessage =  UI.formatDataPoint(avgTileSizeInKB, columnWidths[3]);
 
 			if (avgSizeTooBig) {
 
 				levelComment = ColoredString.red("☓ Error: The average tile size of this level exceeds 50KB.");
-				avgSizeMessage = ColoredString.red(avgTileSizeInKB);
+				avgSizeMessage = ColoredString.red(avgSizeMessage);
 
 			} else if (avgSizeAlmostTooBig) {
 
 				levelComment = ColoredString.yellow("✓ Warning: The average tile size of this level almost exceeds 50KB.");
-				avgSizeMessage = ColoredString.yellow(avgTileSizeInKB);
+				avgSizeMessage = ColoredString.yellow(avgSizeMessage);
 
 			}
 
 			if (currentBigTile) {
 
-				levelComment = `${levelComment} ${ColoredString.red(`Error: A total of ${currentBigTile.num} tiles are bigger than ${tileSizeLimit}KB`)}`;
+			    levelComment = `${levelComment} ${ColoredString.red(`Error: A total of ${currentBigTile.num} tiles are bigger than ${tileSizeLimit}KB`)}`;
 
 			}
+		    
 
 			data.push([
-				levelData["zoom_level"],
-				levelData.tiles,
-				levelData.size / 1024.0,
-				avgSizeMessage,
-				levelData.maxSize / 1024.0,
-				levelComment
+			    levelData["zoom_level"],
+			    levelData.tiles,
+			    UI.formatDataPoint(levelData.size / 1024.0, columnWidths[2]),
+			    avgSizeMessage,
+			    UI.formatDataPoint(levelData.maxSize / 1024.0, columnWidths[4]),
+			    levelComment
 			]);
 
 		}
@@ -148,7 +154,7 @@ class UI {
 		const avgTileSizeInKB = elem.avgTileSize / 1024.0;
 		const avgSizeTooBig = (avgTileSizeInKB) > avgTileSizeLimit; // Mapbox recommends an average tile size of 50KB
 		const avgSizeAlmostTooBig = (avgTileSizeInKB) > avgTileSizeWarning;
-		let avgSizeMessage = `${avgTileSizeInKB} KB average size`;
+	    let avgSizeMessage = UI.formatDataPoint(avgTileSizeInKB) + " KB average size";
 
 		if (avgSizeTooBig) {
 
@@ -165,34 +171,44 @@ class UI {
 	}
 
 	static showTileDistributionData(data, avgTileSizeLimit, avgTileSizeWarning) {
-
+	    var labels = ["#", "Bucket min (KB)", "Bucket max (KB)", "Nº of tiles", "Running avg size (KB)", "% of tiles in this level", "% of level size", "Accum % of tiles", "Accum % size"];
+	    var columnWidths = labels.map((label)=>label.length);
 		const dataToPrint = data.map((elem, index) =>
-			UI.formatTileDistributionElement(elem, index, avgTileSizeLimit, avgTileSizeWarning)
+		    UI.formatTileDistributionElement(elem, index, avgTileSizeLimit, avgTileSizeWarning, columnWidths)
 		);
 
 		Log.title("Tile size distribution");
-		Log.table(["#", "Bucket min (KB)", "Bucket max (KB)", "Nº of tiles", "Running avg size (KB)", "% of tiles in this level", "% of level size", "Accum % of tiles", "Accum % size"], dataToPrint);
+		Log.table(labels, dataToPrint);
 
 	}
 
-	static formatTileDistributionElement(elem, index, avgTileSizeLimit, avgTileSizeWarning) {
+    static formatTileDistributionElement(elem, index, avgTileSizeLimit, avgTileSizeWarning, columnWidths) {
 
 		const avgTileSizeInKB = elem.runningAvgSize;
 		const avgSizeTooBig = (avgTileSizeInKB) > avgTileSizeLimit; // Mapbox recommends an average tile size of 50KB
 		const avgSizeAlmostTooBig = (avgTileSizeInKB) > avgTileSizeWarning;
-		let avgSizeMessage = avgTileSizeInKB;
+		let avgSizeMessage = UI.formatDataPoint(avgTileSizeInKB, columnWidths[4]);
 
 		if (avgSizeTooBig) {
 
-			avgSizeMessage = ColoredString.red(avgTileSizeInKB);
+			avgSizeMessage = ColoredString.red(avgSizeMessage);
 
 		} else if (avgSizeAlmostTooBig) {
 
-			avgSizeMessage = ColoredString.yellow(avgTileSizeInKB);
+			avgSizeMessage = ColoredString.yellow(avgSizeMessage);
 
 		}
 
-		return [index + 1, elem.minSize, elem.maxSize, elem.length, avgSizeMessage, elem.currentPc, elem.currentBucketSizePc, elem.accumPc, elem.accumBucketSizePc];
+	return [index + 1,
+			UI.formatDataPoint(elem.minSize,columnWidths[1]),
+			UI.formatDataPoint(elem.maxSize,columnWidths[2]),
+			UI.formatDataPoint(elem.length, columnWidths[3],false),
+			avgSizeMessage,
+			UI.formatDataPoint(elem.currentPc,columnWidths[5]),
+			UI.formatDataPoint(elem.currentBucketSizePc,columnWidths[6]),
+			UI.formatDataPoint(elem.accumPc,columnWidths[7]),
+			UI.formatDataPoint(elem.accumBucketSizePc,columnWidths[8]),
+	       ];
 
 	}
 
@@ -221,9 +237,12 @@ class UI {
 
 		const bucketNames = [];
 		for (let index = 1; index <= bucketData.length; ++index) {
+		    const currBucketData = bucketData[index - 1];
 
-			const currBucketData = bucketData[index - 1];
-			bucketNames.push(`${index} ${currBucketData.minSize} < Size <= ${currBucketData.maxSize} (${currBucketData.length} tiles)`);
+		    var min = UI.formatDataPoint(currBucketData.minSize) +" KB ";
+		    var max = UI.formatDataPoint(currBucketData.maxSize) +" KB ";
+		
+		    bucketNames.push(`${index} ${min} < Size <= ${max} (${currBucketData.length} tiles)`);
 
 		}
 
@@ -256,8 +275,8 @@ class UI {
 	}
 
 	static formatBucketInfo(tile, tileSizeLimit) {
-
-		const size = `${tile.size} KB`;
+	    
+	    const size = UI.formatDataPoint(tile.size)+" KB";
 		const tileSizeMessage = (tile.size > tileSizeLimit ? ColoredString.red(size) : size);
 		const {lon, lat} = Utils.tile2LonLat(tile.zoom_level, tile.tile_row, tile.tile_column);
 		return `${tile.zoom_level}/${tile.tile_column}/${tile.tile_row} - ${tileSizeMessage} - LonLat: [${lon}, ${lat}]`;
