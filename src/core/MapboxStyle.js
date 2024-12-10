@@ -105,7 +105,7 @@ class MapboxStyle {
 
 		const self = this;
 		const layers = self.layerDataById[layerName];
-		return layers.some((l) => {
+		return layers && layers.some((l) => {
 
 			return (
 				l &&
