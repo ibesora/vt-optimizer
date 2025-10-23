@@ -2,17 +2,17 @@
 /*eslint camelcase: ["error", {allow: ["zoom_level", "tile_row", "tile_column"]}]*/
 "use strict";
 
-const Listr = require("listr");
-const { Observable } = require("rxjs");
-const DataConverter = require("./DataConverter");
-const IO = require("./IO");
-const Log = require("./Log");
-const MapboxStyle = require("./MapboxStyle");
-const Simplifier = require("./Simplifier");
-const UI = require("../UI");
-const Utils = require("./Utils");
-const VTReader = require("./VTReader");
-const VTWriter = require("./VTWriter");
+import Listr from "listr";
+import { Observable } from "rxjs";
+import DataConverter from "./DataConverter.js";
+import IO from "./IO.js";
+import Log from "./Log.js";
+import MapboxStyle from "./MapboxStyle.js";
+import Simplifier from "./Simplifier.js";
+import UI from "../UI.js";
+import Utils from "./Utils.js";
+import VTReader from "./VTReader.js";
+import VTWriter from "./VTWriter.js";
 
 class VTProcessor {
 
@@ -649,4 +649,4 @@ class VTProcessor {
 VTProcessor.avgTileSizeWarning = 45;
 VTProcessor.avgTileSizeLimit = 50;
 
-module.exports = VTProcessor;
+export default VTProcessor;

@@ -2,11 +2,11 @@
 /*eslint camelcase: ["error", {allow: ["zoom_level", "tile_row", "tile_column"]}]*/
 "use strict";
 
-const Pbf = require("pbf");
-const zlib = require("zlib");
-const SQLite = require("./SQLite");
-const Utils = require("./Utils");
-const { Tile } = require("./vector-tile");
+import Pbf from "pbf";
+import zlib from "zlib";
+import SQLite from "./SQLite.js";
+import Utils from "./Utils.js";
+import { Tile } from "./vector-tile.js";
 
 class VTWriter {
 
@@ -197,4 +197,4 @@ class VTWriter {
 
 }
 
-module.exports = VTWriter;
+export default VTWriter;

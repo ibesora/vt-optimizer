@@ -1,8 +1,8 @@
 // @flow
 "use strict";
 
-const test = require("tap").test;
-const MapboxStyle = require("../../src/core/MapboxStyle");
+import { test } from "tap";
+import MapboxStyle from "../../src/core/MapboxStyle.js";
 
 test("MapboxStyle", (t) => {
 

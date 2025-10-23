@@ -1,9 +1,9 @@
 // @flow
 "use strict";
 
-const commandLineOptions = require("./command-line-options");
+import commandLineOptions from "./command-line-options.js";
 
-module.exports = [
+export default [
 	{
 		header: "Vector Tile Weight Loser",
 		content: "Reduces a Mapbox VT file removing all the layers not used in a style"

@@ -1,7 +1,7 @@
 // @flow
 "use strict";
 
-const sqlite3 = require("sqlite3");
+import sqlite3 from "sqlite3";
 
 class SQLite {
 
@@ -115,4 +115,4 @@ class SQLite {
 
 }
 
-module.exports = SQLite;
+export default SQLite;

@@ -1,8 +1,8 @@
 // @flow
 "use strict";
 
-const test = require("tap").test;
-const Utils = require("../../src/core/Utils");
+import { test } from "tap";
+import Utils from "../../src/core/Utils.js";
 
 test("Utils", (t) => {
 

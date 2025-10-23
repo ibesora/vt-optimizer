@@ -1,9 +1,9 @@
 // @flow
 "use strict";
 
-const test = require("tap").test;
-const MapboxStyleLayer = require("../../src/core/MapboxStyleLayer");
-const PaintPropertiesToCheck = require("../../src/PaintPropertiesToCheck");
+import { test } from "tap";
+import MapboxStyleLayer from "../../src/core/MapboxStyleLayer.js";
+import PaintPropertiesToCheck from "../../src/PaintPropertiesToCheck.js";
 
 test("MapboxStyleLayer", (t) => {
 

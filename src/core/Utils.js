@@ -1,7 +1,7 @@
 // @flow
 "use strict";
 
-const axios = require("axios");
+import axios from "axios";
 
 class Utils {
 
@@ -199,4 +199,4 @@ class Utils {
 
 }
 
-module.exports = Utils;
+export default Utils;

@@ -1,8 +1,8 @@
 // @flow
 "use strict";
 
-const test = require("tap").test;
-const ColoredString = require("../../src/core/ColoredString");
+import { test } from "tap";
+import ColoredString from "../../src/core/ColoredString.js";
 
 test("ColoredString", (t) => {
 
