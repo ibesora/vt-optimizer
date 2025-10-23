@@ -8,7 +8,7 @@ test("ColoredString", (t) => {
 
 	t.test("#format does change text", (t) => {
 
-		t.notEquals(ColoredString.format(ColoredString.blue, "test"), "test");
+		t.not(ColoredString.format(ColoredString.blue, "test"), "test");
 		t.end();
 
 	});

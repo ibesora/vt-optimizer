@@ -7,7 +7,7 @@ class ColoredString {
 
 	static format(color, ...args) {
 
-		return color(args);
+		return color(...args);
 
 	}
 

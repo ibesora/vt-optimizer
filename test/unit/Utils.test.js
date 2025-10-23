@@ -105,7 +105,7 @@ test("Utils", (t) => {
 
 	t.test("#loadFromURL", (t) => {
 
-		t.resolves(Utils.loadFromURL("https://geoserveis.icgc.cat/data/planet/1/1/1.pbf"));
+		t.resolves(Utils.loadFromURL("https://tile.openstreetmap.jp/data/planet/1/1/1.pbf"));
 		t.end();
 
 	});
