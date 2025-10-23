@@ -4,7 +4,7 @@
 
 // Tile ========================================
 
-const Tile = exports.Tile = {};
+const Tile = {};
 
 Tile.read = function (pbf, end) {
 
@@ -274,3 +274,5 @@ Tile.Layer.write = function (obj, pbf) {
 	}
 
 };
+
+export { Tile };
