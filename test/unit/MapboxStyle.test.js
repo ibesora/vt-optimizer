@@ -58,7 +58,7 @@ test("MapboxStyle", (t) => {
 
 	});
 
-  t.test("#isLayerVisibleOnLevel", async (t) => {
+	t.test("#isLayerVisibleOnLevel", async (t) => {
 
 		const style = new MapboxStyle("./files/styleMultipleLayers.json");
 		await style.open();
