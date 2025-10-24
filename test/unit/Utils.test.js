@@ -12,6 +12,18 @@ test("Utils", (t) => {
 
 	}
 
+	t.test("#asyncForEach - asyncForEach", async (t) => {
+
+		const array = [1, 2, 3, 4, 5];
+		const result = [];
+		await Utils.asyncForEach(array, async (item) => {
+			result.push(item * 2);
+		});
+		t.same(result, [2, 4, 6, 8, 10]);
+		t.end();
+
+	});
+
 	t.test("#toRadians - toDegrees", (t) => {
 
 		const coordX = 90;
@@ -65,6 +77,8 @@ test("Utils", (t) => {
 
 		const coordY = 1.123456;
 		t.ok(almostEqual(Utils.normalized2WorldY(Utils.world2NormalizedY(coordY)), coordY));
+		t.equal(Utils.world2NormalizedY(-90), 1, "Lat -90 returns 1");
+		t.equal(Utils.world2NormalizedY(90), 0, "Lat 90 returns 0");
 		t.end();
 
 	});
@@ -77,6 +91,27 @@ test("Utils", (t) => {
 		const lonlat = Utils.normalized2World(x, y);
 		t.ok(almostEqual(lon, lonlat.lon));
 		t.ok(almostEqual(lat, lonlat.lat));
+		t.end();
+
+	});
+
+	t.test("#world2VT - vT2World", (t) => {
+
+		const zoom = 10;
+		const column = 553;
+		const row = 391;
+		const extent = 4096;
+		const originalLonLat = { lon: 139.6917, lat: 35.6895 }; // Tokyo
+		const vtCoord = Utils.world2VT(zoom, column, row, extent, originalLonLat.lon, originalLonLat.lat);
+		const roundTrippedLonLat = Utils.vt2World(zoom, column, row, extent, vtCoord.x, vtCoord.y);
+		t.ok(
+			almostEqual(originalLonLat.lon, roundTrippedLonLat.lon),
+			`Longitude should match (original: ${originalLonLat.lon}, round: ${roundTrippedLonLat.lon})`
+		);
+		t.ok(
+			almostEqual(originalLonLat.lat, roundTrippedLonLat.lat),
+			`Latitude should match (original: ${originalLonLat.lat}, round: ${roundTrippedLonLat.lat})`
+		);
 		t.end();
 
 	});
