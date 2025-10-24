@@ -9,7 +9,6 @@
   "scripts": {
     "lint": "eslint --fix --cache",
     "test": "run-s lint test-unit",
-    "test-cov": "nyc --require=flow-remove-types/register --reporter=text-summary --reporter=lcov --cache npm run test-unit",
     "test-unit": "tap test/unit"
   },
   "type": "module",
