@@ -71,7 +71,7 @@ class VTProcessor {
 
 	static async infoLoop(reader, vtSummary, tiles) {
 
-		UI.printSummaryTable(vtSummary, tiles, VTProcessor.avgTileSizeLimit, VTProcessor.avgTileSizeWarning, reader.tileSizeLimit);
+		UI.printSummaryTable(vtSummary, tiles, VTProcessor.avgTileSizeLimit, VTProcessor.avgTileSizeWarning, VTReader.tileSizeLimit);
 
 		while (await UI.wantMoreInfoQuestion()) {
 
@@ -82,15 +82,15 @@ class VTProcessor {
 			while (await UI.tilesInBucketQuestion()) {
 
 				const selectedBucket = await UI.selectBucketPrompt(data);
-				UI.showBucketInfo(buckets[selectedBucket], reader.tileSizeLimit);
+				UI.showBucketInfo(buckets[selectedBucket], VTReader.tileSizeLimit);
 
 				while (await UI.tileInfoQuestion()) {
 
-					const tileIndex = await UI.selectTilePrompt(buckets[selectedBucket], reader.tileSizeLimit);
+					const tileIndex = await UI.selectTilePrompt(buckets[selectedBucket], VTReader.tileSizeLimit);
 					const tileData = await VTProcessor.computeTileData(reader, tileIndex.zoom_level, tileIndex.tile_column, tileIndex.tile_row);
 					const vt = await DataConverter.mVTLayers2GeoJSON(tileData.rawPBF, tileIndex.zoom_level, tileIndex.tile_column, tileIndex.tile_row);
 					UI.showTileInfo(tileData, vt);
-					UI.showBucketInfo(buckets[selectedBucket], reader.tileSizeLimit);
+					UI.showBucketInfo(buckets[selectedBucket], VTReader.tileSizeLimit);
 
 				}
 

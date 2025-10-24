@@ -36,7 +36,7 @@ class UI {
 	static printSummaryTable(vtSummary, tiles, avgTileSizeLimit, avgTileSizeWarning, tileSizeLimit) {
 	    const labels = ["Zoom level", "Tiles", "Total level size (KB)", "Average tile size (KB)", "Max tile size (KB)", ""];
 	    var columnWidths = labels.map((label)=>label.length);
-	    const data = UI.createSummaryTableData(vtSummary, tiles, avgTileSizeLimit, avgTileSizeWarning, tileSizeLimit,columnWidths );
+	    const data = UI.createSummaryTableData(vtSummary, tiles, avgTileSizeLimit, avgTileSizeWarning, tileSizeLimit, columnWidths);
 
 		Log.log("");
 		Log.title("Vector Tile Summary");
