@@ -2,11 +2,11 @@
 /*eslint camelcase: ["error", {allow: ["zoom_level", "tile_row", "tile_column"]}]*/
 "use strict";
 
-const Pbf = require("pbf");
-const zlib = require("zlib");
-const Log = require("./Log");
-const SQLite = require("./SQLite");
-const { Tile } = require("./vector-tile");
+import Pbf from "pbf";
+import zlib from "zlib";
+import Log from "./Log.js";
+import SQLite from "./SQLite.js";
+import { Tile } from "./vector-tile.js";
 
 class VTReader {
 
@@ -365,4 +365,4 @@ class VTReader {
 
 VTReader.tileSizeLimit = 500;
 
-module.exports = VTReader;
+export default VTReader;

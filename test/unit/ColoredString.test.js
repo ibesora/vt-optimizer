@@ -1,14 +1,14 @@
 // @flow
 "use strict";
 
-const test = require("tap").test;
-const ColoredString = require("../../src/core/ColoredString");
+import { test } from "tap";
+import ColoredString from "../../src/core/ColoredString.js";
 
 test("ColoredString", (t) => {
 
 	t.test("#format does change text", (t) => {
 
-		t.notEquals(ColoredString.format(ColoredString.blue, "test"), "test");
+		t.not(ColoredString.format(ColoredString.blue, "test"), "test");
 		t.end();
 
 	});

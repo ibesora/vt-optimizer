@@ -1,7 +1,7 @@
 // @flow
 "use strict";
 
-const simplify = require("simplify-geojson");
+import simplify from "simplify-geojson";
 
 class Simplifier {
 
@@ -26,4 +26,4 @@ class Simplifier {
 
 }
 
-module.exports = Simplifier;
+export default Simplifier;

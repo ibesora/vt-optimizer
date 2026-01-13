@@ -1,7 +1,7 @@
 // @flow
 "use strict";
 
-const fs = require("fs");
+import fs from "fs";
 
 class IO {
 
@@ -25,4 +25,4 @@ class IO {
 
 }
 
-module.exports = IO;
+export default IO;

@@ -2,10 +2,10 @@
 /*eslint camelcase: ["error", {allow: ["zoom_level", "tile_row", "tile_column"]}]*/
 "use strict";
 
-const Inquirer = require("inquirer");
-const ColoredString = require("./core/ColoredString");
-const Log = require("./core/Log");
-const Utils = require("./core/Utils");
+import Inquirer from "inquirer";
+import ColoredString from "./core/ColoredString.js";
+import Log from "./core/Log.js";
+import Utils from "./core/Utils.js";
 
 class UI {
 
@@ -36,7 +36,7 @@ class UI {
 	static printSummaryTable(vtSummary, tiles, avgTileSizeLimit, avgTileSizeWarning, tileSizeLimit) {
 	    const labels = ["Zoom level", "Tiles", "Total level size (KB)", "Average tile size (KB)", "Max tile size (KB)", ""];
 	    var columnWidths = labels.map((label)=>label.length);
-	    const data = UI.createSummaryTableData(vtSummary, tiles, avgTileSizeLimit, avgTileSizeWarning, tileSizeLimit,columnWidths );
+	    const data = UI.createSummaryTableData(vtSummary, tiles, avgTileSizeLimit, avgTileSizeWarning, tileSizeLimit, columnWidths);
 
 		Log.log("");
 		Log.title("Vector Tile Summary");
@@ -411,4 +411,4 @@ class UI {
 
 }
 
-module.exports = UI;
+export default UI;

@@ -1,13 +1,11 @@
 #!/usr/bin/env node
 
-const CommandLineArgs = require("command-line-args");
-const CommandLineUsage = require("command-line-usage");
-const commandLineOptions = require("./src/command-line-options");
-const usageSections = require("./src/usage-sections");
-const VTProcessor = require("./src/core/VTProcessor");
-
-
-const Log = require("./src/core/Log");
+import CommandLineArgs from "command-line-args";
+import CommandLineUsage from "command-line-usage";
+import commandLineOptions from "./src/command-line-options.js";
+import usageSections from "./src/usage-sections.js";
+import VTProcessor from "./src/core/VTProcessor.js";
+import Log from "./src/core/Log.js";
 
 try {
 

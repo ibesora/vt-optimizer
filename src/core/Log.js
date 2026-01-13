@@ -1,8 +1,8 @@
 // @flow
 "use strict";
 
-const ColoredString = require("./ColoredString");
-require("console.table");
+import ColoredString from "./ColoredString.js";
+import "console.table";
 
 class Log {
 
@@ -68,4 +68,4 @@ Log.Error = 0;
 Log.Title = -1;
 Log.errorLevel = Log.Verbose;
 
-module.exports = Log;
+export default Log;

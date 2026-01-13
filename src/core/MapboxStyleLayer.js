@@ -1,7 +1,7 @@
 // @flow
 "use strict";
 
-const PaintPropertiesToCheck = require("../PaintPropertiesToCheck");
+import PaintPropertiesToCheck from "../PaintPropertiesToCheck.js";
 
 /*
 * Represents a layer according to the specification found in
@@ -115,4 +115,4 @@ class MapboxStyleLayer {
 
 }
 
-module.exports = MapboxStyleLayer;
+export default MapboxStyleLayer;

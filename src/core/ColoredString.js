@@ -1,13 +1,13 @@
 // @flow
 "use strict";
 
-const chalk = require("chalk");
+import chalk from "chalk";
 
 class ColoredString {
 
 	static format(color, ...args) {
 
-		return color(args);
+		return color(...args);
 
 	}
 
@@ -20,4 +20,4 @@ ColoredString.green = chalk.green;
 ColoredString.white = chalk.white;
 ColoredString.bold = chalk.bold;
 
-module.exports = ColoredString;
+export default ColoredString;

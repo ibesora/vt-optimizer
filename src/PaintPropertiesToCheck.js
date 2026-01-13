@@ -1,7 +1,7 @@
 // @flow
 "use strict";
 
-module.exports = [
+export default [
 	"fill-opacity",
 	"fill-outline-color",
 	"line-opacity",
